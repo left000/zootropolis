@@ -1,0 +1,337 @@
+2026-09-06T11:57:38.757+02:00  INFO 28180 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Starting ZootropolisApplication using Java 21.0.11 with PID 28180 (C:\Dev\Projects\zootropolis\target\classes started by Eduardo in C:\Dev\Projects\zootropolis)
+2026-09-06T11:57:38.759+02:00 DEBUG 28180 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-06T11:57:38.760+02:00  INFO 28180 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-09-06T11:57:39.236+02:00  INFO 28180 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-06T11:57:39.287+02:00  INFO 28180 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 10 JPA repository interfaces.
+2026-09-06T11:57:39.658+02:00  INFO 28180 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-06T11:57:39.712+02:00  INFO 28180 --- [zootropolis] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 922 ms
+2026-09-06T11:57:39.848+02:00  INFO 28180 --- [zootropolis] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-06T11:57:39.902+02:00  INFO 28180 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-06T11:57:40.270+02:00  INFO 28180 --- [zootropolis] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-06T11:57:40.298+02:00  INFO 28180 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-06T11:57:40.487+02:00  INFO 28180 --- [zootropolis] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@20a946d9
+2026-09-06T11:57:40.488+02:00  INFO 28180 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-06T11:57:40.546+02:00  WARN 28180 --- [zootropolis] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-06T11:57:40.562+02:00  INFO 28180 --- [zootropolis] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/zootropolis?serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: zootropolis/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-06T11:57:41.565+02:00  INFO 28180 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-06T11:57:41.676+02:00  INFO 28180 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T11:57:41.752+02:00  INFO 28180 --- [zootropolis] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-06T11:57:41.961+02:00  WARN 28180 --- [zootropolis] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-06T11:57:42.019+02:00  WARN 28180 --- [zootropolis] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 3d7a86f8-6733-449f-9b33-c004cb1ef587
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-06T11:57:42.025+02:00  INFO 28180 --- [zootropolis] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-09-06T11:57:42.510+02:00  INFO 28180 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-06T11:57:42.514+02:00  INFO 28180 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Started ZootropolisApplication in 4.074 seconds (process running for 4.538)
+2026-09-06T11:57:42.516+02:00  INFO 28180 --- [zootropolis] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-06T11:57:42.519+02:00  INFO 28180 --- [zootropolis] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-09-06T11:57:42.522+02:00  INFO 28180 --- [zootropolis] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T11:57:42.524+02:00  INFO 28180 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-06T11:57:42.529+02:00  INFO 28180 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-09-06T11:58:41.622+02:00  INFO 21528 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Starting ZootropolisApplication using Java 21.0.11 with PID 21528 (C:\Dev\Projects\zootropolis\target\classes started by Eduardo in C:\Dev\Projects\zootropolis)
+2026-09-06T11:58:41.624+02:00 DEBUG 21528 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-06T11:58:41.625+02:00  INFO 21528 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-09-06T11:58:42.029+02:00  INFO 21528 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-06T11:58:42.075+02:00  INFO 21528 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 40 ms. Found 10 JPA repository interfaces.
+2026-09-06T11:58:42.382+02:00  INFO 21528 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-06T11:58:42.392+02:00  INFO 21528 --- [zootropolis] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-06T11:58:42.392+02:00  INFO 21528 --- [zootropolis] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-09-06T11:58:42.433+02:00  INFO 21528 --- [zootropolis] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 784 ms
+2026-09-06T11:58:42.573+02:00  INFO 21528 --- [zootropolis] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-06T11:58:42.608+02:00  INFO 21528 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-06T11:58:42.861+02:00  INFO 21528 --- [zootropolis] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-06T11:58:42.883+02:00  INFO 21528 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-06T11:58:43.051+02:00  INFO 21528 --- [zootropolis] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@396f2724
+2026-09-06T11:58:43.052+02:00  INFO 21528 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-06T11:58:43.084+02:00  WARN 21528 --- [zootropolis] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-06T11:58:43.096+02:00  INFO 21528 --- [zootropolis] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/zootropolis?serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: zootropolis/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-06T11:58:43.936+02:00  INFO 21528 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-06T11:58:43.996+02:00  INFO 21528 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T11:58:44.038+02:00  INFO 21528 --- [zootropolis] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-06T11:58:44.176+02:00  WARN 21528 --- [zootropolis] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-06T11:58:44.222+02:00  WARN 21528 --- [zootropolis] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 44cdf4fe-c2de-4223-a0ac-2afdb09ca825
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-06T11:58:44.227+02:00  INFO 21528 --- [zootropolis] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-09-06T11:58:44.572+02:00  INFO 21528 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-06T11:58:44.575+02:00  INFO 21528 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Started ZootropolisApplication in 3.26 seconds (process running for 3.667)
+2026-09-06T11:59:05.589+02:00  INFO 21528 --- [zootropolis] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-06T11:59:05.589+02:00  INFO 21528 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-06T11:59:05.590+02:00  INFO 21528 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-09-06T12:00:25.169+02:00  INFO 21528 --- [zootropolis] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-06T12:00:25.173+02:00  INFO 21528 --- [zootropolis] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-09-06T12:00:25.176+02:00  INFO 21528 --- [zootropolis] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:00:25.178+02:00  INFO 21528 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-06T12:00:25.182+02:00  INFO 21528 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-09-06T12:02:24.691+02:00  INFO 23840 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Starting ZootropolisApplication using Java 21.0.11 with PID 23840 (C:\Dev\Projects\zootropolis\target\classes started by Eduardo in C:\Dev\Projects\zootropolis)
+2026-09-06T12:02:24.693+02:00 DEBUG 23840 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-06T12:02:24.694+02:00  INFO 23840 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-09-06T12:02:25.085+02:00  INFO 23840 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-06T12:02:25.127+02:00  INFO 23840 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 10 JPA repository interfaces.
+2026-09-06T12:02:25.425+02:00  INFO 23840 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-06T12:02:25.434+02:00  INFO 23840 --- [zootropolis] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-06T12:02:25.435+02:00  INFO 23840 --- [zootropolis] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-09-06T12:02:25.469+02:00  INFO 23840 --- [zootropolis] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 751 ms
+2026-09-06T12:02:25.582+02:00  INFO 23840 --- [zootropolis] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-06T12:02:25.612+02:00  INFO 23840 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-06T12:02:25.860+02:00  INFO 23840 --- [zootropolis] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-06T12:02:25.880+02:00  INFO 23840 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-06T12:02:26.043+02:00  INFO 23840 --- [zootropolis] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1feb586d
+2026-09-06T12:02:26.044+02:00  INFO 23840 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-06T12:02:26.074+02:00  WARN 23840 --- [zootropolis] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-06T12:02:26.086+02:00  INFO 23840 --- [zootropolis] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/zootropolis?serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: zootropolis/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-06T12:02:26.832+02:00  INFO 23840 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-06T12:02:26.889+02:00  INFO 23840 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:02:26.935+02:00  INFO 23840 --- [zootropolis] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-06T12:02:27.070+02:00  WARN 23840 --- [zootropolis] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-06T12:02:27.116+02:00  WARN 23840 --- [zootropolis] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 5b6e9b3c-0313-4f5b-bb1a-f2de983ce7ec
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-06T12:02:27.121+02:00  INFO 23840 --- [zootropolis] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-09-06T12:02:27.466+02:00  INFO 23840 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-06T12:02:27.469+02:00  INFO 23840 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Started ZootropolisApplication in 3.091 seconds (process running for 3.473)
+2026-09-06T12:02:55.360+02:00  INFO 23840 --- [zootropolis] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-06T12:02:55.361+02:00  INFO 23840 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-06T12:02:55.362+02:00  INFO 23840 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-09-06T12:03:38.611+02:00  INFO 23840 --- [zootropolis] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-06T12:03:38.615+02:00  INFO 23840 --- [zootropolis] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-09-06T12:03:38.618+02:00  INFO 23840 --- [zootropolis] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:03:38.619+02:00  INFO 23840 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-06T12:03:38.623+02:00  INFO 23840 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-09-06T12:03:41.512+02:00  INFO 476 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Starting ZootropolisApplication using Java 21.0.11 with PID 476 (C:\Dev\Projects\zootropolis\target\classes started by Eduardo in C:\Dev\Projects\zootropolis)
+2026-09-06T12:03:41.513+02:00 DEBUG 476 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-06T12:03:41.514+02:00  INFO 476 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-09-06T12:03:41.909+02:00  INFO 476 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-06T12:03:41.953+02:00  INFO 476 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 10 JPA repository interfaces.
+2026-09-06T12:03:42.265+02:00  INFO 476 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-06T12:03:42.276+02:00  INFO 476 --- [zootropolis] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-06T12:03:42.276+02:00  INFO 476 --- [zootropolis] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-09-06T12:03:42.311+02:00  INFO 476 --- [zootropolis] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 774 ms
+2026-09-06T12:03:42.437+02:00  INFO 476 --- [zootropolis] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-06T12:03:42.473+02:00  INFO 476 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-06T12:03:42.731+02:00  INFO 476 --- [zootropolis] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-06T12:03:42.753+02:00  INFO 476 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-06T12:03:42.920+02:00  INFO 476 --- [zootropolis] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@18b3db6e
+2026-09-06T12:03:42.921+02:00  INFO 476 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-06T12:03:42.959+02:00  WARN 476 --- [zootropolis] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-06T12:03:42.971+02:00  INFO 476 --- [zootropolis] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/zootropolis?serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: zootropolis/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-06T12:03:43.715+02:00  INFO 476 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-06T12:03:43.767+02:00  INFO 476 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:03:43.810+02:00  INFO 476 --- [zootropolis] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-06T12:03:43.952+02:00  WARN 476 --- [zootropolis] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-06T12:03:44.005+02:00  WARN 476 --- [zootropolis] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: b2cfd9f3-138d-4ad9-a306-3e7554b947e2
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-06T12:03:44.010+02:00  INFO 476 --- [zootropolis] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-09-06T12:03:44.359+02:00  INFO 476 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-06T12:03:44.363+02:00  INFO 476 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Started ZootropolisApplication in 3.143 seconds (process running for 3.519)
+2026-09-06T12:03:48.826+02:00  INFO 476 --- [zootropolis] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-06T12:03:48.826+02:00  INFO 476 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-06T12:03:48.827+02:00  INFO 476 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-09-06T12:24:43.483+02:00  INFO 476 --- [zootropolis] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-06T12:24:43.487+02:00  INFO 476 --- [zootropolis] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-09-06T12:24:43.489+02:00  INFO 476 --- [zootropolis] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:24:43.494+02:00  INFO 476 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-06T12:24:43.498+02:00  INFO 476 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-09-06T12:28:19.565+02:00  INFO 7544 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Starting ZootropolisApplication using Java 21.0.11 with PID 7544 (C:\Dev\Projects\zootropolis\target\classes started by Eduardo in C:\Dev\Projects\zootropolis)
+2026-09-06T12:28:19.566+02:00 DEBUG 7544 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-06T12:28:19.567+02:00  INFO 7544 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-09-06T12:28:19.942+02:00  INFO 7544 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-06T12:28:19.983+02:00  INFO 7544 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 10 JPA repository interfaces.
+2026-09-06T12:28:20.300+02:00  INFO 7544 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-06T12:28:20.308+02:00  INFO 7544 --- [zootropolis] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-06T12:28:20.309+02:00  INFO 7544 --- [zootropolis] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-09-06T12:28:20.345+02:00  INFO 7544 --- [zootropolis] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 753 ms
+2026-09-06T12:28:20.480+02:00  INFO 7544 --- [zootropolis] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-06T12:28:20.509+02:00  INFO 7544 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-06T12:28:20.778+02:00  INFO 7544 --- [zootropolis] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-06T12:28:20.800+02:00  INFO 7544 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-06T12:28:20.962+02:00  INFO 7544 --- [zootropolis] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4e647f39
+2026-09-06T12:28:20.963+02:00  INFO 7544 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-06T12:28:21.003+02:00  WARN 7544 --- [zootropolis] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-06T12:28:21.017+02:00  INFO 7544 --- [zootropolis] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/zootropolis?serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: zootropolis/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-06T12:28:21.762+02:00  INFO 7544 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-06T12:28:21.813+02:00  INFO 7544 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:28:21.854+02:00  INFO 7544 --- [zootropolis] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-06T12:28:21.979+02:00  WARN 7544 --- [zootropolis] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-06T12:28:22.023+02:00  WARN 7544 --- [zootropolis] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: a44f8cba-3b4e-4706-9e92-64e9075e0250
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-06T12:28:22.028+02:00  INFO 7544 --- [zootropolis] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-09-06T12:28:22.151+02:00  WARN 7544 --- [zootropolis] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/webmvc/autoconfigure/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'vistaUtente' method 
+com.zootropolis.view.VistaUtente#logout(HttpSession, RedirectAttributes)
+to {GET [/logout]}: There is already 'vistaAutenticazione' bean method
+com.zootropolis.view.VistaAutenticazione#logout(HttpSession, RedirectAttributes) mapped.
+2026-09-06T12:28:22.151+02:00  INFO 7544 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:28:22.153+02:00  INFO 7544 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-06T12:28:22.157+02:00  INFO 7544 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-09-06T12:28:22.160+02:00  INFO 7544 --- [zootropolis] [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-09-06T12:28:22.167+02:00  INFO 7544 --- [zootropolis] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-09-06T12:28:22.176+02:00 ERROR 7544 --- [zootropolis] [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource [org/springframework/boot/webmvc/autoconfigure/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]: Ambiguous mapping. Cannot map 'vistaUtente' method 
+com.zootropolis.view.VistaUtente#logout(HttpSession, RedirectAttributes)
+to {GET [/logout]}: There is already 'vistaAutenticazione' bean method
+com.zootropolis.view.VistaAutenticazione#logout(HttpSession, RedirectAttributes) mapped.
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1815) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:603) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:525) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:333) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:371) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:331) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:196) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1225) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1191) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1121) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:994) ~[spring-context-7.0.9.jar:7.0.9]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) ~[spring-context-7.0.9.jar:7.0.9]
+	at org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) ~[spring-boot-web-server-4.1.1.jar:4.1.1]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:756) ~[spring-boot-4.1.1.jar:4.1.1]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:445) ~[spring-boot-4.1.1.jar:4.1.1]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:321) ~[spring-boot-4.1.1.jar:4.1.1]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1365) ~[spring-boot-4.1.1.jar:4.1.1]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354) ~[spring-boot-4.1.1.jar:4.1.1]
+	at com.zootropolis.ZootropolisApplication.main(ZootropolisApplication.java:12) ~[classes/:na]
+Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'vistaUtente' method 
+com.zootropolis.view.VistaUtente#logout(HttpSession, RedirectAttributes)
+to {GET [/logout]}: There is already 'vistaAutenticazione' bean method
+com.zootropolis.view.VistaAutenticazione#logout(HttpSession, RedirectAttributes) mapped.
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.validateMethodMapping(AbstractHandlerMethodMapping.java:644) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:604) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:327) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:459) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:80) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lambda$detectHandlerMethods$1(AbstractHandlerMethodMapping.java:294) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:986) ~[na:na]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.detectHandlerMethods(AbstractHandlerMethodMapping.java:292) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.processCandidateBean(AbstractHandlerMethodMapping.java:261) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.initHandlerMethods(AbstractHandlerMethodMapping.java:220) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.afterPropertiesSet(AbstractHandlerMethodMapping.java:208) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.afterPropertiesSet(RequestMappingHandlerMapping.java:158) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1862) ~[spring-beans-7.0.9.jar:7.0.9]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1811) ~[spring-beans-7.0.9.jar:7.0.9]
+	... 18 common frames omitted
+
+2026-09-06T12:28:53.710+02:00  INFO 21496 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Starting ZootropolisApplication using Java 21.0.11 with PID 21496 (C:\Dev\Projects\zootropolis\target\classes started by Eduardo in C:\Dev\Projects\zootropolis)
+2026-09-06T12:28:53.712+02:00 DEBUG 21496 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-06T12:28:53.712+02:00  INFO 21496 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-09-06T12:28:54.073+02:00  INFO 21496 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-06T12:28:54.115+02:00  INFO 21496 --- [zootropolis] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 10 JPA repository interfaces.
+2026-09-06T12:28:54.421+02:00  INFO 21496 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-06T12:28:54.430+02:00  INFO 21496 --- [zootropolis] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-06T12:28:54.430+02:00  INFO 21496 --- [zootropolis] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-09-06T12:28:54.462+02:00  INFO 21496 --- [zootropolis] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 727 ms
+2026-09-06T12:28:54.573+02:00  INFO 21496 --- [zootropolis] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-06T12:28:54.604+02:00  INFO 21496 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-06T12:28:54.835+02:00  INFO 21496 --- [zootropolis] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-06T12:28:54.853+02:00  INFO 21496 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-06T12:28:55.002+02:00  INFO 21496 --- [zootropolis] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4e647f39
+2026-09-06T12:28:55.003+02:00  INFO 21496 --- [zootropolis] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-06T12:28:55.030+02:00  WARN 21496 --- [zootropolis] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-06T12:28:55.041+02:00  INFO 21496 --- [zootropolis] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/zootropolis?serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: zootropolis/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-06T12:28:55.746+02:00  INFO 21496 --- [zootropolis] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-06T12:28:55.806+02:00  INFO 21496 --- [zootropolis] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:28:55.848+02:00  INFO 21496 --- [zootropolis] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-06T12:28:55.981+02:00  WARN 21496 --- [zootropolis] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-06T12:28:56.027+02:00  WARN 21496 --- [zootropolis] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: dd0a4775-a6b8-465e-99a6-523d6e4082da
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-09-06T12:28:56.032+02:00  INFO 21496 --- [zootropolis] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-09-06T12:28:56.375+02:00  INFO 21496 --- [zootropolis] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-06T12:28:56.379+02:00  INFO 21496 --- [zootropolis] [main] com.zootropolis.ZootropolisApplication   : Started ZootropolisApplication in 2.935 seconds (process running for 3.33)
+2026-09-06T12:29:00.155+02:00  INFO 21496 --- [zootropolis] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-06T12:29:00.155+02:00  INFO 21496 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-06T12:29:00.156+02:00  INFO 21496 --- [zootropolis] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-09-06T12:29:52.945+02:00  INFO 21496 --- [zootropolis] [http-nio-8080-exec-8] c.z.controller.GestioneAccount           : Esecuzione elaboraLogin per email: eduardofurio22@gmail.com
+2026-09-06T12:29:52.983+02:00  INFO 21496 --- [zootropolis] [http-nio-8080-exec-8] c.z.controller.GestioneAccount           : Autenticazione completata con successo per: eduardofurio22@gmail.com
+2026-09-06T12:33:22.076+02:00  INFO 21496 --- [zootropolis] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-09-06T12:33:22.080+02:00  INFO 21496 --- [zootropolis] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-09-06T12:33:22.083+02:00  INFO 21496 --- [zootropolis] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-06T12:33:22.084+02:00  INFO 21496 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-09-06T12:33:22.088+02:00  INFO 21496 --- [zootropolis] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
