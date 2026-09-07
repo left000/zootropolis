@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dettagli Mezzo - Zootropolis</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .details-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: background-color 0.2s;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="details-container">
+
+    <!-- SCENARIO ERRORE: Veicolo non disponibile -->
+    <div th:if="${erroreNonDisponibile}" style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <h4 style="margin: 0 0 0.5rem 0;">⚠️ Veicolo non disponibile</h4>
+        <p th:text="${erroreNonDisponibile}">Il veicolo selezionato non è al momento disponibile per la prenotazione.</p>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-primary" style="font-size: 0.9rem;">Scegli un altro mezzo</a>
+            <a th:href="@{/utente/mezzi/dettagli/annulla}" class="btn-danger-sm">Annulla</a>
+        </div>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE: Dettagli del mezzo -->
+    <div th:if="${mezzo != null}">
+        <div class="info-row">
+            <strong>Codice Identificativo:</strong>
+            <span th:text="'#MEZZO-' + ${mezzo.id}">#MEZZO-1</span>
+        </div>
+        <div class="info-row">
+            <strong>Tipologia:</strong>
+            <span th:text="${mezzo.tipo}">Monopattino</span>
+        </div>
+        <div class="info-row">
+            <strong>Stato Batteria:</strong>
+            <span th:text="${mezzo.percentualeBatteria} + '% 🔋'" style="font-weight: bold; color: #2e7d32;">85% 🔋</span>
+        </div>
+        <div class="info-row">
+            <strong>Posizione Attuale:</strong>
+            <span th:text="${mezzo.posizione}">Via Roma 10, Zootropolis</span>
+        </div>
+
+        <!-- AZIONI RAPIDE: Torna alla Mappa o Prenota Direttamente -->
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none;">Torna alla Mappa</a>
+
+            <!-- Pulsante Prenota/Sblocca abilitato -->
+            <a th:href="@{/utente/mezzi/prenota/{id}(id=${mezzo.id})}" class="btn btn-primary" style="flex: 2; text-align: center; text-decoration: none;">
+                🔓 Prenota e Sblocca
+            </a>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

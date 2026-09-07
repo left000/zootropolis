@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cerca Mezzi - Zootropolis</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .search-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .action-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        /* Stili per il raggio e la posizione rilevata */
+        .search-info-bar {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .map-placeholder {
+            width: 100%;
+            height: 280px;
+            background: #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #495057;
+            font-size: 1.1rem;
+            border: 2px dashed #ced4da;
+            margin-bottom: 1.5rem;
+        }
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .vehicle-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .battery-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        /* Pulsante Annulla Rosso e Piccolo */
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+            border: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-danger-sm:hover {
+            background-color: #bd2130;
+        }
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<!-- Inclusione del Logo/Header Globale -->
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="search-container">
+    <!-- Contenuto della pagina... -->
+</div>
+</body>
+<div class="search-container">
+
+    <!-- Header con Annulla Rosso e Piccolo -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>Mappa e Mezzi Nelle Vicinanze</h2>
+        <a th:href="@{/utente/mezzi/annulla}" class="btn-danger-sm">Annulla Ricerca</a>
+    </div>
+
+    <!-- VISUALIZZAZIONE POSIZIONE ATTUALE E RAGGIO DI RICERCA -->
+    <div th:if="${posizioneUtente != null}" class="search-info-bar">
+        <div>
+            📍 <strong>Posizione rilevata:</strong> <span th:text="${posizioneUtente}">Via Roma 10, Zootropolis</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <div>
+                🔍 <strong>Raggio attuale:</strong> <span th:text="${raggioRicerca} + ' km'" style="color: #0d6efd; font-weight: bold;">1.0 km</span>
+            </div>
+
+            <!-- Pulsante Reset (visibile se il raggio è stato incrementato) -->
+            <form th:action="@{/utente/mezzi/reset-raggio}" method="post" style="display: inline;" th:if="${raggioRicerca > 1.0}">
+                <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.15rem 0.5rem; font-size: 0.8rem;">
+                    🔄 Reset Raggio
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FLUSSO ALTERNATIVO 2.a: Posizione non rilevabile -->
+    <div th:if="${richiediIndirizzo}" class="action-card" style="border-left: 5px solid #ffc107; background-color: #fff9e6;">
+        <h4 style="color: #856404; margin-bottom: 0.5rem;">2.a.1 Impossibile acquisire posizione GPS</h4>
+        <p style="color: #856404; margin-bottom: 1rem;">2.a.2 Inserisci manualmente la tua posizione per procedere con la ricerca.</p>
+
+        <form th:action="@{/utente/mezzi/indirizzo}" method="post" style="display: flex; gap: 0.5rem;">
+            <input type="text" name="indirizzo" placeholder="Es. Via Roma 15, Zootropolis" required class="form-control" style="flex: 1;" />
+            <button type="submit" class="btn btn-primary">Cerca Mezzi</button>
+        </form>
+    </div>
+
+    <!-- FLUSSO ALTERNATIVO 3.a: Lista vuota -> Espansione Raggio o Annulla -->
+    <div th:if="${richiediEspansione}" class="action-card" style="border-left: 5px solid #17a2b8; background-color: #e3f2fd;">
+        <h4 style="color: #0c5460; margin-bottom: 0.5rem;">3.a.1 Nessun veicolo disponibile nelle vicinanze</h4>
+        <p style="color: #0c5460; margin-bottom: 1rem;" th:text="${messaggioInfo}">Nessun veicolo trovato nel raggio attuale.</p>
+
+        <div class="btn-group">
+            <form th:action="@{/utente/mezzi/espandi}" method="post">
+                <button type="submit" class="btn btn-primary">Espandi Raggio (+1.5 km)</button>
+            </form>
+            <!-- Annulla Rosso Piccolo anche nel blocco espansione -->
+            <a th:href="@{/utente/mezzi/annulla}" class="btn-danger-sm">Annulla</a>
+        </div>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE: Mappa & listaMezziVicini -->
+    <div th:if="${listaMezziVicini != null and !listaMezziVicini.empty}">
+
+        <div class="map-placeholder">
+            <span style="font-size: 2rem;">🗺️</span>
+            <strong>Mappa Interattiva Zootropolis</strong>
+            <span style="font-size: 0.9rem; color: #6c757d;" th:text="${#lists.size(listaMezziVicini)} + ' veicoli trovati entro ' + ${raggioRicerca} + ' km'"></span>
+        </div>
+
+        <h3 style="margin-bottom: 1rem; color: #2c3e50;">Mezzi trovati:</h3>
+
+        <div class="vehicle-grid">
+            <div th:each="mezzo : ${listaMezziVicini}" class="vehicle-card">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <h4 th:text="${mezzo.tipo}" style="margin: 0; text-transform: capitalize; color: #2c3e50;">Tipo Mezzo</h4>
+                        <span class="battery-badge" th:text="${mezzo.percentualeBatteria != null ? mezzo.percentualeBatteria + '%' : '100%'}">100% </span>
+                    </div>
+                    <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        📍 Posizione: <strong th:text="${mezzo.posizione}">Via Roma 1</strong>
+                    </p>
+                </div>
+
+                <!-- 1. selezionaVeicolo(idMezzo) -->
+                <a th:href="@{/utente/mezzi/{id}(id=${mezzo.id})}"
+                   class="btn btn-primary"
+                   style="width: 100%; margin-top: 1rem; text-align: center; text-decoration: none; display: block;">
+                    Visualizza Dettagli
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

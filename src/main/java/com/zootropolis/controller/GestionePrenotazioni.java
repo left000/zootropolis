@@ -1,0 +1,89 @@
+package com.zootropolis.controller;
+
+import com.zootropolis.entity.Account;
+import com.zootropolis.entity.Mezzo;
+import com.zootropolis.entity.Prenotazione;
+import com.zootropolis.entity.Utente;
+import com.zootropolis.exception.EccezioneMezzoNonDisponibile;
+import com.zootropolis.exception.ErroreValidazioneException;
+import com.zootropolis.repository.MezzoRepository;
+import com.zootropolis.repository.PrenotazioneRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Service
+public class GestionePrenotazioni {
+
+    private static final Logger log = LoggerFactory.getLogger(GestionePrenotazioni.class);
+    private static final int DURATA_PRENOTAZIONE_MINUTI = 15;
+
+    private final MezzoRepository mezzoRepository;
+    private final PrenotazioneRepository prenotazioneRepository;
+
+    public GestionePrenotazioni(MezzoRepository mezzoRepository, PrenotazioneRepository prenotazioneRepository) {
+        this.mezzoRepository = mezzoRepository;
+        this.prenotazioneRepository = prenotazioneRepository;
+    }
+
+    // 2. elaboraPrenotazione(idMezzo, idUtente)
+    @Transactional
+    public int elaboraPrenotazione(Long idMezzo, Account utente) {
+        log.info("Elaborazione prenotazione per mezzo ID: {} da utente ID: {}", idMezzo, utente.getId());
+
+        Mezzo mezzo = mezzoRepository.findById(idMezzo)
+                .orElseThrow(() -> new EccezioneMezzoNonDisponibile("Mezzo non trovato"));
+
+        // getStato() + validaDisponibilita(statoMezzo)
+        boolean disponibile = validaDisponibilita(mezzo);
+        if (!disponibile) {
+            // Sequenza 2.a: erroreVeicoloOccupato
+            throw new EccezioneMezzoNonDisponibile("Il veicolo non può essere prenotato");
+        }
+
+        // validaRequisitiUtente(idUtente)
+        boolean idoneo = validaRequisitiUtente(utente);
+        if (!idoneo) {
+            // Sequenza 2.b: erroreRequisitiMancanti
+            throw new ErroreValidazioneException("L'utente non rispetta i requisiti per prenotare il mezzo");
+        }
+
+        // setStatoMezzo("PRENOTATO") -> setStato(false)
+        mezzo.setStato(false); // Imposta il mezzo come occupato/non più disponibile
+        mezzoRepository.save(mezzo);
+
+        // Gestione cast da Account a Utente e salvataggio Prenotazione
+        Prenotazione nuovaPrenotazione;
+        if (utente instanceof Utente) {
+            nuovaPrenotazione = new Prenotazione((Utente) utente, mezzo, LocalDateTime.now(), DURATA_PRENOTAZIONE_MINUTI);
+            prenotazioneRepository.save(nuovaPrenotazione);
+        } else {
+            throw new ErroreValidazioneException("L'account loggato non è un utente valido per la prenotazione");
+        }
+
+        // avviaTimerPrenotazione()
+        avviaTimerPrenotazione(nuovaPrenotazione);
+
+        // Return: confermaConTempo(tempoRimanente)
+        return DURATA_PRENOTAZIONE_MINUTI;
+    }
+
+    // Self-message: validaDisponibilita(statoMezzo)
+    private boolean validaDisponibilita(Mezzo mezzo) {
+        return Boolean.TRUE.equals(mezzo.getStato());
+    }
+
+    // Self-message: validaRequisitiUtente(idUtente)
+    private boolean validaRequisitiUtente(Account utente) {
+        // Esempio requisiti: Utente registrato e non disabilitato
+        return utente != null && utente.getId() != null;
+    }
+
+    // Self-message: avviaTimerPrenotazione()
+    private void avviaTimerPrenotazione(Prenotazione prenotazione) {
+        log.info("Timer di {} minuti avviato per la prenotazione ID: {}", DURATA_PRENOTAZIONE_MINUTI, prenotazione.getId());
+    }
+}

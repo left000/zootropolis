@@ -48,6 +48,13 @@
     </style>
 </head>
 <body style="display: block;">
+<!-- Inclusione del Logo/Header Globale -->
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="dashboard-container">
+    <!-- Contenuto della pagina... -->
+</div>
+</body>
 <div class="dashboard-container">
 
     <!-- Bar d'intestazione -->
@@ -61,22 +68,26 @@
         <a th:href="@{/logout}" class="btn btn-secondary">Logout</a>
     </div>
 
-    <!-- Messaggio di benvenuto post-login -->
+    <!-- Messaggio di sistema -->
     <div th:if="${messaggio}" class="alert alert-success" th:text="${messaggio}"></div>
 
     <!-- Sezione Servizi Zootropolis -->
     <h3 style="margin-bottom: 1rem; color: #2c3e50;">Servizi Disponibili</h3>
     <div class="grid-services">
+
+        <!-- UC-03: Cercare Mezzi -->
+        <div class="service-card">
+            <h3>Cerca Mezzi</h3>
+            <p>Trova monopattini e bici disponibili nelle tue vicinanze sulla mappa.</p>
+            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-primary">Cerca Ora</a>
+        </div>
+
         <div class="service-card">
             <h3>I Tuoi Biglietti</h3>
             <p>Visualizza o acquista nuovi ingressi per il parco Zootropolis.</p>
             <button class="btn btn-primary" disabled>In arrivo</button>
         </div>
-        <div class="service-card">
-            <h3>Mappa & Attrazioni</h3>
-            <p>Esplora gli itinerari e le aree tematiche disponibili oggi.</p>
-            <button class="btn btn-primary" disabled>In arrivo</button>
-        </div>
+
         <div class="service-card">
             <h3>Area Personale</h3>
             <p>Gestisci le credenziali del tuo profilo e le tue preferenze.</p>

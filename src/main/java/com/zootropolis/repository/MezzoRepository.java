@@ -9,4 +9,5 @@ import java.util.List;
 public interface MezzoRepository extends JpaRepository<Mezzo, Long> {
     List<Mezzo> findByStato(Boolean stato);
     List<Mezzo> findByTipo(String tipo);
+    List<Mezzo> findByStatoTrue();
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Entity
 @Table(name = "PRENOTAZIONE")
@@ -35,4 +36,14 @@ public class Prenotazione {
     @ManyToOne
     @JoinColumn(name = "id_mezzo")
     private Mezzo mezzo;
+
+    // Costruttore per UC-05: create(utente, mezzo, oraAttuale)
+    public Prenotazione(Utente utente, Mezzo mezzo, LocalDateTime oraInizio, int minutiValidita) {
+        this.utente = utente;
+        this.mezzo = mezzo;
+        this.oraInizio = oraInizio;
+        this.oraFine = oraInizio.plusMinutes(minutiValidita);
+        this.stato = true; // true = Prenotazione Attiva
+        this.codiceSblocco = 1000 + new Random().nextInt(9000); // Genera codice a 4 cifre
+    }
 }
