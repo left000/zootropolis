@@ -1,5 +1,6 @@
 package com.zootropolis.controller;
 
+import com.zootropolis.dto.MezzoDTO;
 import com.zootropolis.entity.Mezzo;
 import com.zootropolis.exception.EccezioneMezzoNonDisponibile;
 import com.zootropolis.exception.EccezionePosizioneMancante;
@@ -136,4 +137,31 @@ public class GestioneMezzi {
                 (mezzo.getPercentualeBatteria() == null || mezzo.getPercentualeBatteria() > 10);
     }
 
+    public MezzoDTO convertiInDTO(Mezzo mezzo) {
+        if (mezzo == null) return null;
+
+        MezzoDTO dto = new MezzoDTO();
+        dto.setId(mezzo.getId());
+        dto.setTipo(mezzo.getTipo());
+        dto.setPercentualeBatteria(mezzo.getPercentualeBatteria());
+        dto.setStato(mezzo.getStato());
+        dto.getPosizione();
+        dto.setPosizione(mezzo.getPosizione());
+
+        if (mezzo.getOperatore() != null) {
+            dto.setIdOperatore(mezzo.getOperatore().getId());
+        }
+        return dto;
+    }
+    public List<MezzoDTO> acquisisciPosizioneERicercaDTO() {
+        List<Mezzo> mezziEntity = acquisisciPosizioneERicerca();
+        return mezziEntity.stream()
+                .map(this::convertiInDTO)
+                .collect(Collectors.toList());
+    }
+
+    public MezzoDTO richiediDettagliDTO(Long idMezzo) {
+        Mezzo mezzoEntity = richiediDettagli(idMezzo);
+        return convertiInDTO(mezzoEntity);
+    }
 }

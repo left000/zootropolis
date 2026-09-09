@@ -3,6 +3,8 @@ package com.zootropolis.view;
 import com.zootropolis.controller.GestioneAccount;
 import com.zootropolis.controller.GestioneMezzi;
 import com.zootropolis.controller.GestionePrenotazioni;
+import com.zootropolis.dto.MezzoDTO;
+import com.zootropolis.dto.PrenotazioneDTO;
 import com.zootropolis.dto.RegistrazioneDTO;
 import com.zootropolis.entity.Account;
 import com.zootropolis.entity.Mezzo;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
 
 @Controller
@@ -175,25 +176,19 @@ public class VistaUtente {
     // UC-04 VISUALIZZARE DETTAGLI MEZZO
     // ==========================================
 
-    // 1. selezionaVeicolo(idMezzo)
+
+    // UC-04: Passaggio DTO alla pagina dettagli_mezzo.html
     @GetMapping("/utente/mezzi/{id}")
     public String selezionaVeicolo(@PathVariable("id") Long idMezzo, HttpSession session, Model model) {
         Account account = (Account) session.getAttribute("accountLoggato");
         if (account == null) return "redirect:/login";
 
         try {
-            // 2. richiediDettagli(idMezzo)
-            Mezzo mezzo = gestioneMezzi.richiediDettagli(idMezzo);
-
-            // 3. mostraDettagli(datiMezzo)
-            model.addAttribute("mezzo", mezzo);
+            MezzoDTO mezzoDTO = gestioneMezzi.richiediDettagliDTO(idMezzo);
+            model.addAttribute("mezzo", mezzoDTO); // Passa MezzoDTO a Thymeleaf
             return "dettagli_mezzo";
-
         } catch (EccezioneMezzoNonDisponibile e) {
-            // 2.a.2 mostraErrore("Veicolo non più disponibile")
-            // chiediNuovaSelezioneOAnnulla()
             model.addAttribute("erroreNonDisponibile", e.getMessage());
-            model.addAttribute("idMezzoErrato", idMezzo);
             return "dettagli_mezzo";
         }
     }
@@ -206,32 +201,23 @@ public class VistaUtente {
     }
 
     // ==========================================
-    // UC-04 PRENOTA MEZZO
+    // UC-05 PRENOTA MEZZO
     // ==========================================
 
-    // 1. richiedePrenotazione(idMezzo)
     @GetMapping("/utente/mezzi/prenota/{id}")
     public String richiedePrenotazione(@PathVariable("id") Long idMezzo, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         Account utente = (Account) session.getAttribute("accountLoggato");
         if (utente == null) return "redirect:/login";
 
         try {
-            // 2. elaboraPrenotazione(idMezzo, idUtente) -> 5. confermaPrenotazione(tempoRimanente)
-            int tempoRimanente = gestionePrenotazioni.elaboraPrenotazione(idMezzo, utente);
+            PrenotazioneDTO prenotazioneDTO = gestionePrenotazioni.elaboraPrenotazione(idMezzo, utente);
 
-            model.addAttribute("tempoRimanente", tempoRimanente);
-            model.addAttribute("idMezzo", idMezzo);
+            model.addAttribute("prenotazione", prenotazioneDTO); // Passa PrenotazioneDTO a Thymeleaf
+            model.addAttribute("tempoRimanente", 15);
             return "conferma_prenotazione";
-
-        } catch (EccezioneMezzoNonDisponibile e) {
-            // Sequenza 2.a: informa("Il veicolo non può essere prenotato")
-            redirectAttributes.addFlashAttribute("errore", "Il veicolo non può essere prenotato: " + e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
             return "redirect:/utente/mezzi/cerca";
-
-        } catch (ErroreValidazioneException e) {
-            // Sequenza 2.b: operazioneAnnullata()
-            redirectAttributes.addFlashAttribute("errore", "Operazione Annullata: " + e.getMessage());
-            return "redirect:/utente/dashboard";
         }
     }
 }
