@@ -23,12 +23,34 @@
             display: inline-block;
             margin-bottom: 1rem;
         }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
     </style>
 </head>
 <body style="display: block;">
 <div th:replace="~{header :: appHeader}"></div>
 
 <div class="ride-container">
+
+    <!-- SEQUENZA 3.a: ERRORE AREA NON CONSENTITA -->
+    <div th:if="${erroreAreaNonConsentita}" class="alert-error">
+        <strong>⚠️ Impossibile terminare:</strong> <span th:text="${erroreAreaNonConsentita}">Area di sosta non consentita</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Sposta il veicolo in una zona parcheggio autorizzata per concludere il noleggio.</p>
+    </div>
+
+    <!-- SEQUENZA 4.a: ERRORE CONNESSIONE HARDWARE -->
+    <div th:if="${erroreConnessioneHardware}" class="alert-error">
+        <strong>⚠️ Anomalia Tecnica:</strong> <span th:text="${erroreConnessioneHardware}">Connessione col veicolo fallita</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Operazione annullata. Riprova tra qualche istante.</p>
+    </div>
+
     <div class="status-badge">🟢 Corsa Iniziata</div>
     <h2>Buon Viaggio!</h2>
     <p style="color: #6c757d;">Il mezzo è stato sbloccato con successo.</p>
@@ -40,10 +62,18 @@
         <p style="margin: 0.3rem 0;"><strong>Posizione Partenza:</strong> <span th:text="${corsa.areaAttuale}">Via Roma 10</span></p>
     </div>
 
-    <div style="margin-top: 2rem;">
-        <!-- Pulsante che servirà per UC-07 Termina Noleggio -->
-        <button class="btn btn-danger" style="width: 100%;" disabled>Termina Corsa</button>
+    <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.8rem;" th:if="${corsa != null}">
+        <!-- UC-07: Calcola Percorso durante la corsa -->
+        <a th:href="@{/utente/percorso/avvia(idMezzo=${corsa.idMezzo})}" class="btn btn-secondary" style="text-decoration: none;">
+            🗺️ Calcola Percorso
+        </a>
+
+        <!-- UC-08: Termina Corsa -->
+        <form th:action="@{/utente/corse/termina/{id}(id=${corsa.id})}" method="post">
+            <button type="submit" class="btn btn-danger" style="width: 100%;">🔴 Termina Corsa</button>
+        </form>
     </div>
+
 </div>
 </body>
 </html>

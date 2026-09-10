@@ -264,4 +264,32 @@ public class VistaUtente {
         redirectAttributes.addFlashAttribute("messaggio", "Ricerca annullata con successo.");
         return "redirect:/utente/dashboard";
     }
+
+    // ==========================================
+    // UC-08 TERMINARE CORSA
+    // ==========================================
+
+    // 1. richiedeTermineCorsa(idCorsa)
+    @PostMapping("/utente/corse/termina/{id}")
+    public String richiedeTermineCorsa(@PathVariable("id") Long idCorsa, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+
+        try {
+            // 2. elaboraTermineCorsa(idCorsa) -> 7. confermaConclusioneNoleggio()
+            gestioneCorse.elaboraTermineCorsa(idCorsa);
+            redirectAttributes.addFlashAttribute("messaggio", "Corsa terminata con successo! Grazie per aver viaggiato con Zootropolis.");
+            return "redirect:/utente/dashboard";
+
+        } catch (IllegalArgumentException e) {
+            // Sequenza 3.a: 3.a.2 informa("Impossibile terminare: area di sosta non consentita")
+            redirectAttributes.addFlashAttribute("erroreAreaNonConsentita", e.getMessage());
+            return "redirect:/utente/corse/dettaglio/" + idCorsa;
+
+        } catch (IllegalStateException e) {
+            // Sequenza 4.a: 4.a.2 informa("Anomalia tecnica: connessione con il veicolo fallita")
+            // 4.a.3 operazioneAnnullata()
+            redirectAttributes.addFlashAttribute("erroreConnessioneHardware", e.getMessage());
+            return "redirect:/utente/corse/dettaglio/" + idCorsa;
+        }
+    }
 }

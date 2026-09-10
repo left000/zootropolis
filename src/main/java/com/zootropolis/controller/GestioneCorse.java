@@ -182,4 +182,65 @@ public class GestioneCorse {
                 .map(this::convertiInDTO)
                 .orElse(null);
     }
+
+    // ==========================================
+    // UC-08 TERMINARE CORSA
+    // ==========================================
+
+    @Transactional
+    public boolean elaboraTermineCorsa(Long idCorsa) {
+        log.info("Elaborazione termine corsa per ID Corsa: {}", idCorsa);
+
+        Corsa corsa = corsaRepository.findById(idCorsa)
+                .orElseThrow(() -> new IllegalArgumentException("Corsa non trovata"));
+
+        // Message: getIdMezzo() su :Corsa -> Return: idMezzo
+        Mezzo mezzo = corsa.getMezzo();
+        if (mezzo == null) {
+            throw new IllegalStateException("Nessun mezzo associato alla corsa");
+        }
+
+        // Message: getPosizione() su :Mezzo -> Return: coordinateAttuali
+        String coordinateAttuali = mezzo.getPosizione();
+
+        // Self-Message: verificaAreaSosta(coordinateAttuali)
+        if (!verificaAreaSosta(coordinateAttuali)) {
+            // Sequenza 3.a: erroreAreaNonConsentita
+            throw new IllegalArgumentException("Impossibile terminare: area di sosta non consentita");
+        }
+
+        // Self-Message: inviaComandoBloccoFisico(idMezzo)
+        boolean bloccoRiuscito = inviaComandoBloccoFisico(mezzo.getId());
+        if (!bloccoRiuscito) {
+            // Sequenza 4.a: erroreConnessioneHardware
+            throw new IllegalStateException("Anomalia tecnica: connessione con il veicolo fallita");
+        }
+
+        // Message: setStatoMezzo("BLOCCATO") / setStato(true)
+        mezzo.setStato(true); // Mezzo ripristinato e bloccato in attesa di un nuovo noleggio
+        mezzoRepository.save(mezzo);
+
+        // Message: setOraFine(oraAttuale)
+        corsa.setOraFine(LocalDateTime.now());
+
+        // Message: setStatoCorsa("CONCLUSA")
+        corsaRepository.save(corsa);
+
+        // Return: corsaTerminataConSuccesso
+        return true;
+    }
+
+    // Self-Message: verificaAreaSosta(coordinateAttuali)
+    private boolean verificaAreaSosta(String coordinateAttuali) {
+        if (coordinateAttuali != null && coordinateAttuali.toLowerCase().contains("vietata")) {
+            return false; // Simula area non consentita
+        }
+        return true;
+    }
+
+    // Self-Message: inviaComandoBloccoFisico(idMezzo)
+    private boolean inviaComandoBloccoFisico(Long idMezzo) {
+        // Ritorna false se l'ID è un valore convenzionale di test hardware (es. 999)
+        return idMezzo != 999L;
+    }
 }
