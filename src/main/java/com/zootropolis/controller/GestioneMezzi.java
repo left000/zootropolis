@@ -164,4 +164,13 @@ public class GestioneMezzi {
         Mezzo mezzoEntity = richiediDettagli(idMezzo);
         return convertiInDTO(mezzoEntity);
     }
+
+    // Decrementa il raggio di ricerca (minimo 1.0 km)
+    public List<Mezzo> decrementaRaggioRicerca() {
+        if (this.raggioRicerca > 1.0) {
+            this.raggioRicerca = Math.max(1.0, this.raggioRicerca - 1.5);
+            log.info("Raggio di ricerca ridotto a: {} km", raggioRicerca);
+        }
+        return ricercaMezziInternal();
+    }
 }

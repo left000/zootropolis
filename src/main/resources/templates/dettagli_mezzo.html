@@ -79,14 +79,24 @@
             <span th:text="${mezzo.posizione}">Via Roma 10, Zootropolis</span>
         </div>
 
-        <!-- AZIONI RAPIDE: Torna alla Mappa o Prenota Direttamente -->
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none;">Torna alla Mappa</a>
+        <!-- AZIONI RAPIDE AGGIORNATE (Mappa, UC-07 Calcola Percorso e UC-05 Prenota Mezzo) -->
+        <div style="margin-top: 2rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
 
-            <!-- Pulsante Prenota/Sblocca abilitato -->
-            <a th:href="@{/utente/mezzi/prenota/{id}(id=${mezzo.id})}" class="btn btn-primary" style="flex: 2; text-align: center; text-decoration: none;">
-                🔓 Prenota e Sblocca
+            <!-- Torna alla Mappa -->
+            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none;">
+                ⬅️ Mappa
             </a>
+
+            <!-- Avvia UC-07: Calcolare Percorso (passando idMezzo per leggere getPosizione()) -->
+            <a th:href="@{/utente/percorso/avvia(idMezzo=${mezzo.id})}" class="btn btn-secondary" style="flex: 1.5; text-align: center; text-decoration: none;">
+                🗺️ Calcola Percorso
+            </a>
+
+            <!-- Avvia UC-05: Prenotare mezzo -->
+            <a th:href="@{/utente/mezzi/prenota/{id}(id=${mezzo.id})}" class="btn btn-primary" style="flex: 1.5; text-align: center; text-decoration: none;">
+                📌 Prenota
+            </a>
+
         </div>
     </div>
 

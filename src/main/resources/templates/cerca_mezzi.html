@@ -28,6 +28,8 @@
             justify-content: space-between;
             align-items: center;
             font-size: 0.95rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
         }
         .map-placeholder {
             width: 100%;
@@ -95,10 +97,6 @@
 <div th:replace="~{header :: appHeader}"></div>
 
 <div class="search-container">
-    <!-- Contenuto della pagina... -->
-</div>
-</body>
-<div class="search-container">
 
     <!-- Header con Annulla Rosso e Piccolo -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -106,22 +104,38 @@
         <a th:href="@{/utente/mezzi/annulla}" class="btn-danger-sm">Annulla Ricerca</a>
     </div>
 
-    <!-- VISUALIZZAZIONE POSIZIONE ATTUALE E RAGGIO DI RICERCA -->
+    <!-- VISUALIZZAZIONE POSIZIONE ATTUALE E CONTROLLO DINAMICO RAGGIO -->
     <div th:if="${posizioneUtente != null}" class="search-info-bar">
         <div>
             📍 <strong>Posizione rilevata:</strong> <span th:text="${posizioneUtente}">Via Roma 10, Zootropolis</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <div>
-                🔍 <strong>Raggio attuale:</strong> <span th:text="${raggioRicerca} + ' km'" style="color: #0d6efd; font-weight: bold;">1.0 km</span>
-            </div>
 
-            <!-- Pulsante Reset (visibile se il raggio è stato incrementato) -->
-            <form th:action="@{/utente/mezzi/reset-raggio}" method="post" style="display: inline;" th:if="${raggioRicerca > 1.0}">
-                <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.15rem 0.5rem; font-size: 0.8rem;">
-                    🔄 Reset Raggio
-                </button>
-            </form>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            🔍 <strong>Raggio:</strong>
+            <span th:text="${raggioRicerca} + ' km'" style="color: #0d6efd; font-weight: bold; margin-right: 0.5rem;">1.0 km</span>
+
+            <!-- Pulsante Diminuisci (-1.5 km, attivo solo se > 1.0 km) -->
+            <a th:href="@{/utente/mezzi/diminuisci-raggio}"
+               class="btn btn-secondary btn-sm"
+               style="padding: 0.2rem 0.5rem; font-size: 0.8rem; text-decoration: none;"
+               th:if="${raggioRicerca > 1.0}">
+                ➖ Diminuisci
+            </a>
+
+            <!-- Pulsante Espandi (+1.5 km) -->
+            <a th:href="@{/utente/mezzi/espandi-raggio}"
+               class="btn btn-primary btn-sm"
+               style="padding: 0.2rem 0.5rem; font-size: 0.8rem; text-decoration: none;">
+                ➕ Espandi
+            </a>
+
+            <!-- Pulsante Reset (attivo solo se > 1.0 km) -->
+            <a th:href="@{/utente/mezzi/reset-raggio}"
+               class="btn btn-outline-secondary btn-sm"
+               style="padding: 0.2rem 0.5rem; font-size: 0.8rem; text-decoration: none; border: 1px solid #6c757d; color: #6c757d;"
+               th:if="${raggioRicerca > 1.0}">
+                🔄 Reset
+            </a>
         </div>
     </div>
 
@@ -130,9 +144,13 @@
         <h4 style="color: #856404; margin-bottom: 0.5rem;">2.a.1 Impossibile acquisire posizione GPS</h4>
         <p style="color: #856404; margin-bottom: 1rem;">2.a.2 Inserisci manualmente la tua posizione per procedere con la ricerca.</p>
 
-        <form th:action="@{/utente/mezzi/indirizzo}" method="post" style="display: flex; gap: 0.5rem;">
-            <input type="text" name="indirizzo" placeholder="Es. Via Roma 15, Zootropolis" required class="form-control" style="flex: 1;" />
-            <button type="submit" class="btn btn-primary">Cerca Mezzi</button>
+<!--        <form th:action="@{/utente/mezzi/indirizzo}" method="post" style="display: flex; gap: 0.5rem;">-->
+<!--            <input type="text" name="indirizzo" placeholder="Es. Via Roma 15, Zootropolis" required class="form-control" style="flex: 1;" />-->
+<!--            <button type="submit" class="btn btn-primary">Cerca Mezzi</button>-->
+<!--        </form>-->
+        <form th:action="@{/utente/mezzi/indirizzo}" method="post">
+            <input type="text" name="indirizzo" placeholder="Es. Via Roma 15, Zootropolis" required />
+            <button type="submit">Cerca Mezzi</button>
         </form>
     </div>
 
@@ -142,10 +160,7 @@
         <p style="color: #0c5460; margin-bottom: 1rem;" th:text="${messaggioInfo}">Nessun veicolo trovato nel raggio attuale.</p>
 
         <div class="btn-group">
-            <form th:action="@{/utente/mezzi/espandi}" method="post">
-                <button type="submit" class="btn btn-primary">Espandi Raggio (+1.5 km)</button>
-            </form>
-            <!-- Annulla Rosso Piccolo anche nel blocco espansione -->
+            <a th:href="@{/utente/mezzi/espandi-raggio}" class="btn btn-primary" style="text-decoration: none;">Espandi Raggio (+1.5 km)</a>
             <a th:href="@{/utente/mezzi/annulla}" class="btn-danger-sm">Annulla</a>
         </div>
     </div>
@@ -166,7 +181,7 @@
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
                         <h4 th:text="${mezzo.tipo}" style="margin: 0; text-transform: capitalize; color: #2c3e50;">Tipo Mezzo</h4>
-                        <span class="battery-badge" th:text="${mezzo.percentualeBatteria != null ? mezzo.percentualeBatteria + '%' : '100%'}">100% </span>
+                        <span class="battery-badge" th:text="${mezzo.percentualeBatteria != null ? mezzo.percentualeBatteria + '%' : '100%'}">100%</span>
                     </div>
                     <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 0.5rem;">
                         📍 Posizione: <strong th:text="${mezzo.posizione}">Via Roma 1</strong>

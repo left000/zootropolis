@@ -1,6 +1,7 @@
 package com.zootropolis.controller;
 
 import com.zootropolis.dto.CorsaDTO;
+import com.zootropolis.dto.PercorsoDTO;
 import com.zootropolis.entity.Account;
 import com.zootropolis.entity.Corsa;
 import com.zootropolis.entity.Mezzo;
@@ -31,42 +32,36 @@ public class GestioneCorse {
         this.corsaRepository = corsaRepository;
     }
 
-    // 2. elaboraSblocco(idMezzo, idUtente)
+    // ==========================================
+    // UC-06 SBLOCCARE MEZZO
+    // ==========================================
+
     @Transactional
     public CorsaDTO elaboraSblocco(Long idMezzo, Account utente) {
         log.info("Elaborazione sblocco per mezzo ID: {} da utente ID: {}", idMezzo, utente.getId());
 
-        // getStato()
         Mezzo mezzo = mezzoRepository.findById(idMezzo)
                 .orElseThrow(() -> new EccezioneMezzoNonDisponibile("Mezzo non trovato"));
 
-        // validaStatoVeicolo(statoMezzo)
         if (!validaStatoVeicolo(mezzo)) {
-            // Sequenza 2.a: erroreVeicoloNonNoleggiabile
             throw new EccezioneMezzoNonDisponibile("Impossibile sbloccare: veicolo non noleggiabile");
         }
 
-        // validaRequisitiUtente(idUtente)
         if (!validaRequisitiUtente(utente)) {
-            // Sequenza 2.b: erroreRequisitiMancanti
             throw new ErroreValidazioneException("Requisiti non soddisfatti per il noleggio");
         }
 
-        // inviaComandoSblocco(idMezzo)
         boolean sbloccoRiuscito = inviaComandoSblocco(idMezzo);
         if (!sbloccoRiuscito) {
-            // Sequenza 3.a: erroreTimeoutConnessione
             annullaPrenotazioneAttiva(utente);
-            mezzo.setStato(true); // setStatoMezzo("DISPONIBILE")
+            mezzo.setStato(true);
             mezzoRepository.save(mezzo);
             throw new RuntimeException("Anomalia tecnica: connessione col veicolo fallita");
         }
 
-        // OK (Sequenza Principale)
-        mezzo.setStato(false); // setStatoMezzo("IN_USO")
+        mezzo.setStato(false);
         mezzoRepository.save(mezzo);
 
-        // create(idUtente, idMezzo, oraAttuale) -> nuovaCorsa
         Corsa corsa = new Corsa();
         if (utente instanceof Utente) {
             corsa.setUtente((Utente) utente);
@@ -79,7 +74,6 @@ public class GestioneCorse {
         return convertiInDTO(corsa);
     }
 
-    // Self-messages
     private boolean validaStatoVeicolo(Mezzo mezzo) {
         return mezzo != null;
     }
@@ -89,12 +83,19 @@ public class GestioneCorse {
     }
 
     private boolean inviaComandoSblocco(Long idMezzo) {
-        // Simulazione invio comando hardware al mezzo (ritorna true per esito positivo)
         return true;
     }
 
     private void annullaPrenotazioneAttiva(Account utente) {
         log.info("Annullamento prenotazione attiva per utente: {}", utente.getId());
+    }
+
+    // TODO: METODO DENTRO IL DOCUMENTO
+    public List<CorsaDTO> ottieniCorseInCorsoDTO(Long idUtente) {
+        return corsaRepository.findByUtenteIdAndOraFineIsNull(idUtente)
+                .stream()
+                .map(this::convertiInDTO)
+                .collect(Collectors.toList());
     }
 
     public CorsaDTO convertiInDTO(Corsa corsa) {
@@ -111,12 +112,74 @@ public class GestioneCorse {
         return dto;
     }
 
-    // TODO: METODO DENTRO IL DOCUMENTO
-    // Recupera tutte le corse in corso dell'utente come DTO
-    public List<CorsaDTO> ottieniCorseInCorsoDTO(Long idUtente) {
-        return corsaRepository.findByUtenteIdAndOraFineIsNull(idUtente)
-                .stream()
+    // ==========================================
+    // UC-07 CALCOLARE PERCORSO
+    // ==========================================
+
+    public PercorsoDTO elaboraRichiestaPercorso(Long idMezzo, String destinazione, String partenzaManuale) {
+        log.info("Elaborazione richiesta percorso verso: {}", destinazione);
+
+        // Self-Message: validaDestinazione(destinazione)
+        if (!validaDestinazione(destinazione)) {
+            // Return: erroreDestinazione
+            throw new IllegalArgumentException("Destinazione non valida o non trovata");
+        }
+
+        // Message: getPosizione() su :Mezzo -> Return: posizioneAttuale
+        String posizionePartenza = partenzaManuale;
+        if (posizionePartenza == null || posizionePartenza.isBlank()) {
+            if (idMezzo != null) {
+                Mezzo mezzo = mezzoRepository.findById(idMezzo).orElse(null);
+                if (mezzo != null) {
+                    posizionePartenza = mezzo.getPosizione();
+                }
+            }
+        }
+
+        // Sequenza 4.a: errorePosizioneAssente
+        if (posizionePartenza == null || posizionePartenza.isBlank()) {
+            throw new IllegalStateException("Impossibile acquisire posizione attuale");
+        }
+
+        // Self-Message: calcolaPercorsoOttimale(posizionePartenza, destinazione)
+        PercorsoDTO percorso = calcolaPercorsoOttimale(posizionePartenza, destinazione);
+
+        // Sequenza 5.a: errorePercorsoImpossibile
+        if (percorso == null) {
+            throw new RuntimeException("Impossibile elaborare il percorso verso la destinazione");
+        }
+
+        // Return: datiPercorso
+        return percorso;
+    }
+
+    // Self-Message: validaDestinazione(destinazione)
+    private boolean validaDestinazione(String destinazione) {
+        return destinazione != null && destinazione.trim().length() >= 3;
+    }
+
+    // Self-Message: calcolaPercorsoOttimale(posizionePartenza, destinazione)
+    private PercorsoDTO calcolaPercorsoOttimale(String partenza, String destinazione) {
+        if (destinazione.equalsIgnoreCase("errore")) {
+            return null; // Simula errorePercorsoImpossibile
+        }
+
+        int calcoloDistanza = Math.abs(partenza.hashCode() - destinazione.hashCode()) % 15 + 1;
+        int tempoStimato = calcoloDistanza * 4;
+
+        return new PercorsoDTO(
+                partenza,
+                destinazione,
+                calcoloDistanza,
+                tempoStimato,
+                "Procedere lungo la via principale verso " + destinazione
+        );
+    }
+
+    // Recupera i dettagli di una corsa specifica come DTO
+    public CorsaDTO ottieniCorsaDTO(Long idCorsa) {
+        return corsaRepository.findById(idCorsa)
                 .map(this::convertiInDTO)
-                .collect(Collectors.toList());
+                .orElse(null);
     }
 }

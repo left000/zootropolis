@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcola Percorso - Zootropolis</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .route-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="route-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>🗺️ Calcola Percorso</h2>
+        <!-- annullaOperazione() -->
+        <a th:href="@{/utente/percorso/annulla}" class="btn-danger-sm">Annulla</a>
+    </div>
+
+    <!-- SEQUENZA 3.a: ERRORE DESTINAZIONE -->
+    <div th:if="${erroreDestinazione}" class="alert-error">
+        <strong>⚠️ Errore:</strong> <span th:text="${erroreDestinazione}">Destinazione non valida</span>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Inserisci un nome di destinazione valido o annulla.</p>
+    </div>
+
+    <!-- SEQUENZA 4.a: ERRORE POSIZIONE ASSENTE -->
+    <div th:if="${errorePosizioneAssente}" class="alert-error">
+        <strong>⚠️ Posizione non trovata:</strong> <span th:text="${errorePosizioneAssente}">Impossibile acquisire posizione</span>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Fornisci la posizione di partenza manualmente qui sotto.</p>
+    </div>
+
+    <!-- SEQUENZA 5.a: ERRORE PERCORSO IMPOSSIBILE -->
+    <div th:if="${errorePercorsoImpossibile}" class="alert-error">
+        <strong>⚠️ Percorso non disponibile:</strong> <span th:text="${errorePercorsoImpossibile}">Impossibile elaborare il percorso</span>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Prova ad inserire una destinazione diversa.</p>
+    </div>
+
+    <!-- 2. richiediDestinazione() / 3. fornisciDestinazione() -->
+    <form th:action="@{/utente/percorso/calcola}" method="post" style="margin-bottom: 1.5rem;">
+        <input type="hidden" name="idMezzo" th:value="${idMezzo}" />
+
+        <!-- Input Partenza Manuale (Visibile solo per Sequenza 4.a) -->
+        <div th:if="${richiediPartenzaManuale}" style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.3rem;">📍 Posizione Partenza Manuale:</label>
+            <input type="text" name="partenzaManuale" class="form-control" style="width: 100%; padding: 0.5rem;" placeholder="Es. Via Roma 10" required />
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.3rem;">🏁 Destinazione:</label>
+            <input type="text" name="destinazione" class="form-control" style="width: 100%; padding: 0.5rem;" th:value="${destinazioneInserita}" placeholder="Es. Piazza Cavour" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Calcola Percorso</button>
+    </form>
+
+    <!-- 6. mostraPercorso(datiPercorso) -->
+    <div th:if="${percorso != null}" style="background-color: #e8f4f8; border-left: 4px solid #0d6efd; padding: 1rem; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #0d6efd;">Dettagli Percorso Calcolato</h3>
+        <p><strong>Partenza:</strong> <span th:text="${percorso.partenza}">Via Roma 10</span></p>
+        <p><strong>Destinazione:</strong> <span th:text="${percorso.destinazione}">Piazza Cavour</span></p>
+        <p><strong>Distanza Stimata:</strong> <span th:text="${percorso.distanzaKm} + ' km'">3 km</span></p>
+        <p><strong>Tempo Stimato:</strong> ⏱️ <span th:text="${percorso.tempoStimatoMinuti} + ' minuti'">12 minuti</span></p>
+        <p style="font-size: 0.9rem; color: #555;"><strong>Indicazioni:</strong> <span th:text="${percorso.indicazioniMappa}">Procedi dritto</span></p>
+    </div>
+
+</div>
+</body>
+</html>

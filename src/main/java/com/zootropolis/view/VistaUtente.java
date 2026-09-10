@@ -1,86 +1,36 @@
 package com.zootropolis.view;
 
-import com.zootropolis.controller.GestioneAccount;
 import com.zootropolis.controller.GestioneCorse;
 import com.zootropolis.controller.GestioneMezzi;
 import com.zootropolis.controller.GestionePrenotazioni;
 import com.zootropolis.dto.*;
 import com.zootropolis.entity.Account;
-import com.zootropolis.entity.Mezzo;
 import com.zootropolis.exception.EccezioneMezzoNonDisponibile;
-import com.zootropolis.exception.EccezionePosizioneMancante;
 import com.zootropolis.exception.ErroreValidazioneException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.util.List;
 
 @Controller
 public class VistaUtente {
 
-    private final GestioneAccount gestioneAccount;
     private final GestioneMezzi gestioneMezzi;
     private final GestionePrenotazioni gestionePrenotazioni;
     private final GestioneCorse gestioneCorse;
 
-    public VistaUtente(GestioneAccount gestioneAccount, GestioneMezzi gestioneMezzi, GestionePrenotazioni gestionePrenotazioni, GestioneCorse gestioneCorse) {
-        this.gestioneAccount = gestioneAccount;
+    public VistaUtente(GestioneMezzi gestioneMezzi, GestionePrenotazioni gestionePrenotazioni, GestioneCorse gestioneCorse) {
         this.gestioneMezzi = gestioneMezzi;
         this.gestionePrenotazioni = gestionePrenotazioni;
         this.gestioneCorse = gestioneCorse;
     }
 
     // ==========================================
-    // UC-01 REGISTRAZIONE UTENTE
+    // DASHBOARD UTENTE
     // ==========================================
-
-    @GetMapping("/utente/registrazione")
-    public String avviaRegistrazione(Model model) {
-        model.addAttribute("registrazioneDTO", new RegistrazioneDTO());
-        return "registrazione";
-    }
-
-    @PostMapping("/utente/registrazione")
-    public String fornisciDatiRegistrazione(@ModelAttribute("registrazioneDTO") RegistrazioneDTO dto,
-                                            Model model,
-                                            RedirectAttributes redirectAttributes) {
-        try {
-            gestioneAccount.elaboraRegistrazione(dto);
-            return confermaCreazioneAccount(redirectAttributes);
-        } catch (ErroreValidazioneException e) {
-            model.addAttribute("errore", e.getMessage());
-            return "registrazione";
-        }
-    }
-
-    private String confermaCreazioneAccount(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("messaggio", "Account creato con successo! Ora puoi accedere.");
-        return "redirect:/login";
-    }
-
-    @GetMapping("/utente/registrazione/annulla")
-    public String annullaRegistrazione(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
-        return "redirect:/login";
-    }
-
-    // ==========================================
-    // AREA RISERVATA: DASHBOARD UTENTE
-    // ==========================================
-
-//    @GetMapping("/utente/dashboard")
-//    public String mostraDashboard(HttpSession session, Model model) {
-//        Account account = (Account) session.getAttribute("accountLoggato");
-//
-//        if (account == null) {
-//            return "redirect:/login";
-//        }
-//
-//        model.addAttribute("account", account);
-//        return "dashboard";
-//    }
 
     @GetMapping("/utente/dashboard")
     public String mostraDashboard(HttpSession session, Model model) {
@@ -90,7 +40,6 @@ public class VistaUtente {
         }
 
         // TODO: METODO DENTRO IL DOCUMENTO
-        // Aggiungi sia 'account' che 'utente' al model per sicurezza
         model.addAttribute("account", account);
         model.addAttribute("utente", account);
 
@@ -116,115 +65,62 @@ public class VistaUtente {
     // UC-03 CERCARE MEZZI
     // ==========================================
 
-    // 1. avviaRicercaMezzi()
     @GetMapping("/utente/mezzi/cerca")
-    public String avviaRicercaMezzi(HttpSession session, Model model) {
+    public String cercaMezzi(Model model, HttpSession session) {
         Account account = (Account) session.getAttribute("accountLoggato");
         if (account == null) return "redirect:/login";
 
-        try {
-            List<Mezzo> listaMezzi = gestioneMezzi.acquisisciPosizioneERicerca();
-
-            if (listaMezzi.isEmpty()) {
-                model.addAttribute("richiediEspansione", true);
-                model.addAttribute("messaggioInfo", "Nessun veicolo disponibile nelle vicinanze.");
-                popolaDatiRicerca(model);
-                return "cerca_mezzi";
-            }
-
-            return mostraMezziMappa(listaMezzi, model);
-
-        } catch (EccezionePosizioneMancante e) {
-            model.addAttribute("richiediIndirizzo", true);
-            model.addAttribute("errorePosizione", "Impossibile acquisire la posizione automatica.");
-            return "cerca_mezzi";
-        }
-    }
-
-    @PostMapping("/utente/mezzi/indirizzo")
-    public String fornisciIndirizzoManuale(@RequestParam String indirizzo, Model model) {
-        List<Mezzo> listaMezzi = gestioneMezzi.aggiornaPosizione(indirizzo);
-
-        if (listaMezzi.isEmpty()) {
-            model.addAttribute("richiediEspansione", true);
-            model.addAttribute("messaggioInfo", "Nessun veicolo disponibile nelle vicinanze.");
-            popolaDatiRicerca(model);
-            return "cerca_mezzi";
-        }
-
-        return mostraMezziMappa(listaMezzi, model);
-    }
-
-    @PostMapping("/utente/mezzi/espandi")
-    public String espandiRaggio(Model model) {
-        List<Mezzo> listaMezzi = gestioneMezzi.incrementaRaggioRicerca();
-
-        if (listaMezzi.isEmpty()) {
-            model.addAttribute("richiediEspansione", true);
-            model.addAttribute("messaggioInfo", "Ancora nessun veicolo trovato con il nuovo raggio.");
-            popolaDatiRicerca(model);
-            return "cerca_mezzi";
-        }
-
-        return mostraMezziMappa(listaMezzi, model);
-    }
-
-    // Alt: annullaOperazione() -> operazioneAnnullata()
-    @GetMapping("/utente/mezzi/annulla")
-    public String annullaOperazioneMezzi(RedirectAttributes redirectAttributes) {
-        gestioneMezzi.resetRicerca();
-        redirectAttributes.addFlashAttribute("messaggio", "Ricerca mezzi annullata.");
-        return "redirect:/utente/dashboard";
-    }
-
-    private String mostraMezziMappa(List<Mezzo> listaMezziVicini, Model model) {
-        model.addAttribute("listaMezziVicini", listaMezziVicini);
-        popolaDatiRicerca(model);
+        List<MezzoDTO> listaMezzi = gestioneMezzi.acquisisciPosizioneERicercaDTO();
+        model.addAttribute("listaMezziVicini", listaMezzi);
+        model.addAttribute("raggioRicerca", gestioneMezzi.getRaggioRicerca());
+        model.addAttribute("posizioneUtente", gestioneMezzi.getPosizioneAttualeUtente());
         return "cerca_mezzi";
     }
 
-    // Helper per inviare Raggio e Posizione alla vista
-    private void popolaDatiRicerca(Model model) {
-        model.addAttribute("raggioRicerca", gestioneMezzi.getRaggioRicerca());
-        model.addAttribute("posizioneUtente", gestioneMezzi.getPosizioneAttualeUtente());
+    // TODO: METODO DENTRO IL DOCUMENTO
+    // Espandi raggio (+1.5 km)
+    @GetMapping("/utente/mezzi/espandi-raggio")
+    public String espandiRaggio() {
+        gestioneMezzi.incrementaRaggioRicerca();
+        return "redirect:/utente/mezzi/cerca";
     }
 
-    @PostMapping("/utente/mezzi/reset-raggio")
-    public String resetRaggio(Model model) {
-        List<Mezzo> listaMezzi = gestioneMezzi.resetRaggioRicerca();
+    // TODO: METODO DENTRO IL DOCUMENTO
+    // Diminuisci raggio (-1.5 km)
+    @GetMapping("/utente/mezzi/diminuisci-raggio")
+    public String diminuisciRaggio() {
+        gestioneMezzi.decrementaRaggioRicerca();
+        return "redirect:/utente/mezzi/cerca";
+    }
 
-        if (listaMezzi.isEmpty()) {
-            model.addAttribute("richiediEspansione", true);
-            model.addAttribute("messaggioInfo", "Nessun veicolo disponibile con il raggio di default.");
-            popolaDatiRicerca(model);
-            return "cerca_mezzi";
-        }
-
-        return mostraMezziMappa(listaMezzi, model);
+    // TODO: METODO DENTRO IL DOCUMENTO
+    // Reset raggio (1.0 km)
+    @GetMapping("/utente/mezzi/reset-raggio")
+    public String resetRaggio() {
+        gestioneMezzi.resetRaggioRicerca();
+        return "redirect:/utente/mezzi/cerca";
     }
 
     // ==========================================
     // UC-04 VISUALIZZARE DETTAGLI MEZZO
     // ==========================================
 
-
-    // UC-04: Passaggio DTO alla pagina dettagli_mezzo.html
     @GetMapping("/utente/mezzi/{id}")
     public String selezionaVeicolo(@PathVariable("id") Long idMezzo, HttpSession session, Model model) {
         Account account = (Account) session.getAttribute("accountLoggato");
         if (account == null) return "redirect:/login";
 
         try {
-            MezzoDTO mezzoDTO = gestioneMezzi.richiediDettagliDTO(idMezzo);
-            model.addAttribute("mezzo", mezzoDTO); // Passa MezzoDTO a Thymeleaf
+            MezzoDTO mezzo = gestioneMezzi.richiediDettagliDTO(idMezzo);
+            model.addAttribute("mezzo", mezzo);
             return "dettagli_mezzo";
         } catch (EccezioneMezzoNonDisponibile e) {
             model.addAttribute("erroreNonDisponibile", e.getMessage());
+            model.addAttribute("idMezzoErrato", idMezzo);
             return "dettagli_mezzo";
         }
     }
 
-    // Alt: annullaOperazione() -> operazioneAnnullata()
     @GetMapping("/utente/mezzi/dettagli/annulla")
     public String annullaVisualizzazioneDettagli(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata. Ritorno alla ricerca.");
@@ -232,7 +128,7 @@ public class VistaUtente {
     }
 
     // ==========================================
-    // UC-05 PRENOTA MEZZO
+    // UC-05 PRENOTARE MEZZO
     // ==========================================
 
     @GetMapping("/utente/mezzi/prenota/{id}")
@@ -242,60 +138,130 @@ public class VistaUtente {
 
         try {
             PrenotazioneDTO prenotazioneDTO = gestionePrenotazioni.elaboraPrenotazione(idMezzo, utente);
-
-            model.addAttribute("prenotazione", prenotazioneDTO); // Passa PrenotazioneDTO a Thymeleaf
+            model.addAttribute("prenotazione", prenotazioneDTO);
             model.addAttribute("tempoRimanente", 15);
             return "conferma_prenotazione";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+        } catch (EccezioneMezzoNonDisponibile e) {
+            redirectAttributes.addFlashAttribute("errore", "Il veicolo non può essere prenotato: " + e.getMessage());
             return "redirect:/utente/mezzi/cerca";
+        } catch (ErroreValidazioneException e) {
+            redirectAttributes.addFlashAttribute("errore", "Operazione Annullata: " + e.getMessage());
+            return "redirect:/utente/dashboard";
         }
     }
 
-    // 1. richiedeSbloccoMezzo(idMezzo)
+    // ==========================================
+    // UC-06 SBLOCCARE MEZZO
+    // ==========================================
+
     @GetMapping("/utente/mezzi/sblocca/{id}")
     public String richiedeSbloccoMezzo(@PathVariable("id") Long idMezzo, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
         Account utente = (Account) session.getAttribute("accountLoggato");
         if (utente == null) return "redirect:/login";
 
         try {
-            // 2. elaboraSblocco(idMezzo, idUtente) -> 5. confermaInizioNoleggio()
             CorsaDTO corsaDTO = gestioneCorse.elaboraSblocco(idMezzo, utente);
             model.addAttribute("corsa", corsaDTO);
             return "corsa_in_corso";
-
         } catch (EccezioneMezzoNonDisponibile e) {
-            // 2.a.2 informa("Impossibile sbloccare: veicolo non noleggiabile")
             redirectAttributes.addFlashAttribute("errore", e.getMessage());
             return "redirect:/utente/mezzi/cerca";
-
         } catch (ErroreValidazioneException e) {
-            // 2.b.2 informa("Requisiti non soddisfatti per il noleggio")
             redirectAttributes.addFlashAttribute("errore", e.getMessage());
             return "redirect:/utente/dashboard";
-
         } catch (RuntimeException e) {
-            // 3.a.2 informa("Anomalia tecnica: connessione col veicolo fallita")
             redirectAttributes.addFlashAttribute("errore", e.getMessage());
             return "redirect:/utente/mezzi/cerca";
         }
     }
 
-    //
-//    @GetMapping("/utente/dashboard")
-//    public String mostraDashboard(HttpSession session, Model model) {
-//        Account utente = (Account) session.getAttribute("accountLoggato");
-//        if (utente == null) return "redirect:/login";
-//
-//        model.addAttribute("utente", utente);
-//
-//        // Recupera prenotazioni e corse attive
-//        List<PrenotazioneDTO> prenotazioniAttive = gestionePrenotazioni.ottieniPrenotazioniAttiveDTO(utente.getId());
-//        List<CorsaDTO> corseInCorso = gestioneCorse.ottieniCorseInCorsoDTO(utente.getId());
-//
-//        model.addAttribute("prenotazioniAttive", prenotazioniAttive);
-//        model.addAttribute("corseInCorso", corseInCorso);
-//
-//        return "dashboard"; // o dashboard_utente.html
-//    }
+    // ==========================================
+    // UC-07 CALCOLARE PERCORSO
+    // ==========================================
+
+    // 1. avviaCalcoloPercorso() -> 2. richiediDestinazione()
+    @GetMapping("/utente/percorso/avvia")
+    public String avviaCalcoloPercorso(@RequestParam(value = "idMezzo", required = false) Long idMezzo, Model model, HttpSession session) {
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+        model.addAttribute("idMezzo", idMezzo);
+        return "calcola_percorso";
+    }
+
+    // 3. fornisciDestinazione(destinazione)
+    @PostMapping("/utente/percorso/calcola")
+    public String calcolaPercorso(
+            @RequestParam(value = "idMezzo", required = false) Long idMezzo,
+            @RequestParam("destinazione") String destinazione,
+            @RequestParam(value = "partenzaManuale", required = false) String partenzaManuale,
+            Model model,
+            HttpSession session) {
+
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+
+        model.addAttribute("idMezzo", idMezzo);
+        model.addAttribute("destinazioneInserita", destinazione);
+
+        try {
+            // elaboraRichiestaPercorso(destinazione) -> 6. mostraPercorso(datiPercorso)
+            PercorsoDTO percorso = gestioneCorse.elaboraRichiestaPercorso(idMezzo, destinazione, partenzaManuale);
+            model.addAttribute("percorso", percorso);
+            return "calcola_percorso";
+
+        } catch (IllegalArgumentException e) {
+            // 3.a.2 informa("Destinazione non valida o non trovata")
+            // 3.a.3 richiediNuovaDestinazioneOAnnulla()
+            model.addAttribute("erroreDestinazione", e.getMessage());
+            return "calcola_percorso";
+
+        } catch (IllegalStateException e) {
+            // 4.a.2 informa("Impossibile acquisire posizione attuale")
+            // 4.a.3 richiediPartenzaManualeOAnnulla()
+            model.addAttribute("errorePosizioneAssente", e.getMessage());
+            model.addAttribute("richiediPartenzaManuale", true);
+            return "calcola_percorso";
+
+        } catch (RuntimeException e) {
+            // 5.a.2 informa("Impossibile elaborare il percorso verso la destinazione")
+            // 5.a.3 richiediNuovaDestinazioneOAnnulla()
+            model.addAttribute("errorePercorsoImpossibile", e.getMessage());
+            return "calcola_percorso";
+        }
+    }
+
+    // annullaOperazione() -> operazioneAnnullata()
+    @GetMapping("/utente/percorso/annulla")
+    public String annullaCalcoloPercorso(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
+        return "redirect:/utente/dashboard";
+    }
+
+    // Visualizza i dettagli della corsa in corso selezionata dalla Dashboard
+    @GetMapping("/utente/corse/dettaglio/{id}")
+    public String dettaglioCorsaInCorso(@PathVariable("id") Long idCorsa, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        Account utente = (Account) session.getAttribute("accountLoggato");
+        if (utente == null) return "redirect:/login";
+
+        CorsaDTO corsaDTO = gestioneCorse.ottieniCorsaDTO(idCorsa);
+        if (corsaDTO == null) {
+            redirectAttributes.addFlashAttribute("errore", "Corsa non trovata");
+            return "redirect:/utente/dashboard";
+        }
+
+        model.addAttribute("corsa", corsaDTO);
+        return "corsa_in_corso";
+    }
+
+    // Gestisce l'inserimento manuale della posizione (Flusso 2.a)
+    @PostMapping("/utente/mezzi/indirizzo")
+    public String aggiornaPosizioneManuale(@RequestParam("indirizzo") String indirizzo) {
+        gestioneMezzi.aggiornaPosizione(indirizzo);
+        return "redirect:/utente/mezzi/cerca";
+    }
+
+    @GetMapping("/utente/mezzi/annulla")
+    public String annullaRicercaMezzi(RedirectAttributes redirectAttributes) {
+        gestioneMezzi.resetRicerca();
+        redirectAttributes.addFlashAttribute("messaggio", "Ricerca annullata con successo.");
+        return "redirect:/utente/dashboard";
+    }
 }
