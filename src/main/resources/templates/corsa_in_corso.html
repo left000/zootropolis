@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Corsa in Corso - Zootropolis</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .ride-container {
+            max-width: 500px;
+            margin: 3rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .status-badge {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="ride-container">
+    <div class="status-badge">🟢 Corsa Iniziata</div>
+    <h2>Buon Viaggio!</h2>
+    <p style="color: #6c757d;">Il mezzo è stato sbloccato con successo.</p>
+
+    <!-- Dati dal CorsaDTO -->
+    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1.5rem 0; text-align: left;" th:if="${corsa != null}">
+        <p style="margin: 0.3rem 0;"><strong>ID Corsa:</strong> #<span th:text="${corsa.id}">1</span></p>
+        <p style="margin: 0.3rem 0;"><strong>Ora Inizio:</strong> <span th:text="${#temporals.format(corsa.oraInizio, 'HH:mm:ss')}">10:30:00</span></p>
+        <p style="margin: 0.3rem 0;"><strong>Posizione Partenza:</strong> <span th:text="${corsa.areaAttuale}">Via Roma 10</span></p>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <!-- Pulsante che servirà per UC-07 Termina Noleggio -->
+        <button class="btn btn-danger" style="width: 100%;" disabled>Termina Corsa</button>
+    </div>
+</div>
+</body>
+</html>

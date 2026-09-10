@@ -38,9 +38,19 @@
         Raggiungi il mezzo e procedi allo sblocco prima dello scadere del tempo.
     </p>
 
+<!--    <div style="margin-top: 2rem; display: flex; gap: 1rem;">-->
+<!--        <a th:href="@{/utente/dashboard}" class="btn btn-secondary" style="flex: 1; text-decoration: none;">Torna alla Dashboard</a>-->
+<!--        <button class="btn btn-primary" style="flex: 1;" disabled>Sblocca Ora</button>-->
+<!--    </div>-->
     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
         <a th:href="@{/utente/dashboard}" class="btn btn-secondary" style="flex: 1; text-decoration: none;">Torna alla Dashboard</a>
-        <button class="btn btn-primary" style="flex: 1;" disabled>Sblocca Ora</button>
+
+        <!-- Sostituisci il vecchio <button disabled> con questo link: -->
+        <a th:href="@{/utente/mezzi/sblocca/{id}(id=${prenotazione.idMezzo})}"
+           class="btn btn-primary"
+           style="flex: 1; text-align: center; text-decoration: none;">
+            🔓 Sblocca Ora
+        </a>
     </div>
 </div>
 </body>

@@ -9,4 +9,6 @@ import java.util.List;
 public interface CorsaRepository extends JpaRepository<Corsa, Long> {
     List<Corsa> findByUtenteId(Long utenteId);
     List<Corsa> findByMezzoId(Long mezzoId);
+    // Trova le corse in corso dell'utente (oraFine = null)
+    List<Corsa> findByUtenteIdAndOraFineIsNull(Long idUtente);
 }

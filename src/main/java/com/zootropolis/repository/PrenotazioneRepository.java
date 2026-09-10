@@ -9,4 +9,7 @@ import java.util.List;
 public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long> {
     List<Prenotazione> findByUtenteId(Long utenteId);
     List<Prenotazione> findByStato(Boolean stato);
+    // Trova tutte le prenotazioni attive dell'utente (stato = true)
+    List<Prenotazione> findByUtenteIdAndStatoTrue(Long idUtente);
+
 }

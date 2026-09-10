@@ -45,6 +45,20 @@
             font-size: 0.9rem;
             margin-bottom: 1rem;
         }
+        .activity-card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .item-box {
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body style="display: block;">
@@ -52,24 +66,21 @@
 <div th:replace="~{header :: appHeader}"></div>
 
 <div class="dashboard-container">
-    <!-- Contenuto della pagina... -->
-</div>
-</body>
-<div class="dashboard-container">
 
     <!-- Bar d'intestazione -->
     <div class="header-bar">
         <div>
-            <h2>Benvenuto, <span th:text="${account.nome} + ' ' + ${account.cognome}">Utente</span>!</h2>
+            <h2>Benvenuto, <span th:text="${utente.nome} + ' ' + ${utente.cognome}">Utente</span>!</h2>
             <p style="color: #7f8c8d; font-size: 0.9rem;">
-                Email: <span th:text="${account.email}"></span>
+                Email: <span th:text="${utente.email}"></span>
             </p>
         </div>
-        <a th:href="@{/logout}" class="btn btn-secondary">Logout</a>
+        <a th:href="@{/logout}" class="btn btn-secondary" style="background-color: #dc3545; color: white;">Logout</a>
     </div>
 
-    <!-- Messaggio di sistema -->
+    <!-- Messaggio di sistema/errore -->
     <div th:if="${messaggio}" class="alert alert-success" th:text="${messaggio}"></div>
+    <div th:if="${errore}" class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem;" th:text="${errore}"></div>
 
     <!-- Sezione Servizi Zootropolis -->
     <h3 style="margin-bottom: 1rem; color: #2c3e50;">Servizi Disponibili</h3>
@@ -93,6 +104,59 @@
             <p>Gestisci le credenziali del tuo profilo e le tue preferenze.</p>
             <button class="btn btn-primary" disabled>In arrivo</button>
         </div>
+    </div>
+
+    <!-- SEZIONE ATTIVITÀ IN CORSO -->
+    <h3 style="margin-top: 2.5rem; margin-bottom: 1rem; color: #2c3e50;">Le Tue Attività in Corso</h3>
+
+    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+
+        <!-- CARD 1: PRENOTAZIONI ATTIVE -->
+        <div class="activity-card">
+            <h4 style="margin-top: 0; color: #0d6efd; display: flex; align-items: center; gap: 0.5rem;">
+                ⏱️ Prenotazioni Attive
+            </h4>
+
+            <p th:if="${#lists.isEmpty(prenotazioniAttive)}" style="color: #6c757d; font-size: 0.9rem;">
+                Non hai nessuna prenotazione attiva al momento.
+            </p>
+
+            <div th:each="p : ${prenotazioniAttive}" class="item-box" style="border-left: 4px solid #0d6efd;">
+                <p style="margin: 0; font-weight: bold;">Mezzo #<span th:text="${p.idMezzo}">1</span></p>
+                <p style="margin: 0.2rem 0; font-size: 0.85rem; color: #6c757d;">
+                    Codice Sblocco: <strong th:text="${p.codiceSblocco}" style="color: #198754;">1234</strong>
+                </p>
+                <div style="margin-top: 0.5rem;">
+                    <a th:href="@{/utente/mezzi/sblocca/{id}(id=${p.idMezzo})}" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.2rem 0.6rem; text-decoration: none;">
+                        🔓 Sblocca Ora
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: MEZZI IN USO (SBLOCCATI) -->
+        <div class="activity-card">
+            <h4 style="margin-top: 0; color: #198754; display: flex; align-items: center; gap: 0.5rem;">
+                🛵 Mezzi in Uso (Sbloccati)
+            </h4>
+
+            <p th:if="${#lists.isEmpty(corseInCorso)}" style="color: #6c757d; font-size: 0.9rem;">
+                Nessun mezzo sbloccato al momento.
+            </p>
+
+            <div th:each="c : ${corseInCorso}" class="item-box" style="border-left: 4px solid #198754;">
+                <p style="margin: 0; font-weight: bold;">Corsa #<span th:text="${c.id}">10</span> (Mezzo #<span th:text="${c.idMezzo}">2</span>)</p>
+                <p style="margin: 0.2rem 0; font-size: 0.85rem; color: #6c757d;">
+                    Iniziata alle: <span th:text="${#temporals.format(c.oraInizio, 'HH:mm')}">14:30</span>
+                </p>
+                <div style="margin-top: 0.5rem;">
+                    <a th:href="@{/utente/corse/dettaglio/{id}(id=${c.id})}" class="btn btn-success btn-sm" style="font-size: 0.8rem; padding: 0.2rem 0.6rem; text-decoration: none; background-color: #198754; color: white; border-radius: 4px;">
+                        👁️ Vai alla Corsa
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>

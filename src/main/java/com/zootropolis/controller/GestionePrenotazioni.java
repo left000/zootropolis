@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GestionePrenotazioni {
@@ -139,4 +141,14 @@ public class GestionePrenotazioni {
         }
         return dto;
     }
+
+    // TODO: METODO DENTRO IL DOCUMENTO
+    // Recupera tutte le prenotazioni attive dell'utente come DTO
+    public List<PrenotazioneDTO> ottieniPrenotazioniAttiveDTO(Long idUtente) {
+        return prenotazioneRepository.findByUtenteIdAndStatoTrue(idUtente)
+                .stream()
+                .map(this::convertiInDTO)
+                .collect(Collectors.toList());
+    }
+
 }

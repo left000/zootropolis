@@ -1,11 +1,10 @@
 package com.zootropolis.view;
 
 import com.zootropolis.controller.GestioneAccount;
+import com.zootropolis.controller.GestioneCorse;
 import com.zootropolis.controller.GestioneMezzi;
 import com.zootropolis.controller.GestionePrenotazioni;
-import com.zootropolis.dto.MezzoDTO;
-import com.zootropolis.dto.PrenotazioneDTO;
-import com.zootropolis.dto.RegistrazioneDTO;
+import com.zootropolis.dto.*;
 import com.zootropolis.entity.Account;
 import com.zootropolis.entity.Mezzo;
 import com.zootropolis.exception.EccezioneMezzoNonDisponibile;
@@ -24,11 +23,13 @@ public class VistaUtente {
     private final GestioneAccount gestioneAccount;
     private final GestioneMezzi gestioneMezzi;
     private final GestionePrenotazioni gestionePrenotazioni;
+    private final GestioneCorse gestioneCorse;
 
-    public VistaUtente(GestioneAccount gestioneAccount, GestioneMezzi gestioneMezzi, GestionePrenotazioni gestionePrenotazioni) {
+    public VistaUtente(GestioneAccount gestioneAccount, GestioneMezzi gestioneMezzi, GestionePrenotazioni gestionePrenotazioni, GestioneCorse gestioneCorse) {
         this.gestioneAccount = gestioneAccount;
         this.gestioneMezzi = gestioneMezzi;
         this.gestionePrenotazioni = gestionePrenotazioni;
+        this.gestioneCorse = gestioneCorse;
     }
 
     // ==========================================
@@ -69,15 +70,45 @@ public class VistaUtente {
     // AREA RISERVATA: DASHBOARD UTENTE
     // ==========================================
 
+//    @GetMapping("/utente/dashboard")
+//    public String mostraDashboard(HttpSession session, Model model) {
+//        Account account = (Account) session.getAttribute("accountLoggato");
+//
+//        if (account == null) {
+//            return "redirect:/login";
+//        }
+//
+//        model.addAttribute("account", account);
+//        return "dashboard";
+//    }
+
     @GetMapping("/utente/dashboard")
     public String mostraDashboard(HttpSession session, Model model) {
-        Account account = (Account) session.getAttribute("accountLoggato");
-
+        Object account = session.getAttribute("accountLoggato");
         if (account == null) {
             return "redirect:/login";
         }
 
+        // TODO: METODO DENTRO IL DOCUMENTO
+        // Aggiungi sia 'account' che 'utente' al model per sicurezza
         model.addAttribute("account", account);
+        model.addAttribute("utente", account);
+
+        Long idUtente = null;
+        if (account instanceof AccountDTO) {
+            idUtente = ((AccountDTO) account).getId();
+        } else if (account instanceof Account) {
+            idUtente = ((Account) account).getId();
+        }
+
+        if (idUtente != null) {
+            List<PrenotazioneDTO> prenotazioniAttive = gestionePrenotazioni.ottieniPrenotazioniAttiveDTO(idUtente);
+            List<CorsaDTO> corseInCorso = gestioneCorse.ottieniCorseInCorsoDTO(idUtente);
+
+            model.addAttribute("prenotazioniAttive", prenotazioniAttive);
+            model.addAttribute("corseInCorso", corseInCorso);
+        }
+
         return "dashboard";
     }
 
@@ -220,4 +251,51 @@ public class VistaUtente {
             return "redirect:/utente/mezzi/cerca";
         }
     }
+
+    // 1. richiedeSbloccoMezzo(idMezzo)
+    @GetMapping("/utente/mezzi/sblocca/{id}")
+    public String richiedeSbloccoMezzo(@PathVariable("id") Long idMezzo, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+        Account utente = (Account) session.getAttribute("accountLoggato");
+        if (utente == null) return "redirect:/login";
+
+        try {
+            // 2. elaboraSblocco(idMezzo, idUtente) -> 5. confermaInizioNoleggio()
+            CorsaDTO corsaDTO = gestioneCorse.elaboraSblocco(idMezzo, utente);
+            model.addAttribute("corsa", corsaDTO);
+            return "corsa_in_corso";
+
+        } catch (EccezioneMezzoNonDisponibile e) {
+            // 2.a.2 informa("Impossibile sbloccare: veicolo non noleggiabile")
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+            return "redirect:/utente/mezzi/cerca";
+
+        } catch (ErroreValidazioneException e) {
+            // 2.b.2 informa("Requisiti non soddisfatti per il noleggio")
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+            return "redirect:/utente/dashboard";
+
+        } catch (RuntimeException e) {
+            // 3.a.2 informa("Anomalia tecnica: connessione col veicolo fallita")
+            redirectAttributes.addFlashAttribute("errore", e.getMessage());
+            return "redirect:/utente/mezzi/cerca";
+        }
+    }
+
+    //
+//    @GetMapping("/utente/dashboard")
+//    public String mostraDashboard(HttpSession session, Model model) {
+//        Account utente = (Account) session.getAttribute("accountLoggato");
+//        if (utente == null) return "redirect:/login";
+//
+//        model.addAttribute("utente", utente);
+//
+//        // Recupera prenotazioni e corse attive
+//        List<PrenotazioneDTO> prenotazioniAttive = gestionePrenotazioni.ottieniPrenotazioniAttiveDTO(utente.getId());
+//        List<CorsaDTO> corseInCorso = gestioneCorse.ottieniCorseInCorsoDTO(utente.getId());
+//
+//        model.addAttribute("prenotazioniAttive", prenotazioniAttive);
+//        model.addAttribute("corseInCorso", corseInCorso);
+//
+//        return "dashboard"; // o dashboard_utente.html
+//    }
 }
