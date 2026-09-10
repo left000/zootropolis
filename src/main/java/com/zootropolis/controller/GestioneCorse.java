@@ -243,4 +243,65 @@ public class GestioneCorse {
         // Ritorna false se l'ID è un valore convenzionale di test hardware (es. 999)
         return idMezzo != 999L;
     }
+// ==========================================
+    // UC-09 PAGARE
+    // ==========================================
+
+    // Message: richiediCalcoloImporto(idCorsa) -> Return: importoTotale
+    public Double richiediCalcoloImporto(Long idCorsa) {
+        log.info("Calcolo importo per corsa ID: {}", idCorsa);
+
+        Corsa corsa = corsaRepository.findById(idCorsa)
+                .orElseThrow(() -> new IllegalArgumentException("Corsa non trovata"));
+
+        Double importo = calcolaImporto(corsa);
+        corsa.setImporto(importo);
+        corsaRepository.save(corsa);
+
+        return importo;
+    }
+
+    // Self-Message: calcolaImporto(datiCorsa)
+    private Double calcolaImporto(Corsa corsa) {
+        if (corsa.getOraInizio() == null) return 1.50; // Quota minima
+
+        LocalDateTime oraFine = (corsa.getOraFine() != null) ? corsa.getOraFine() : LocalDateTime.now();
+        long minuti = java.time.Duration.between(corsa.getOraInizio(), oraFine).toMinutes();
+
+        // Quota fissa sblocco (1.00 €) + 0.20 €/min (minimo 1.50 €)
+        double totale = 1.00 + (minuti * 0.20);
+        return Math.max(1.50, Math.round(totale * 100.0) / 100.0);
+    }
+
+    // Message: elaboraTransazione(importoTotale, metodo)
+    @Transactional
+    public boolean elaboraTransazione(Long idCorsa, Double importoTotale, String metodo) {
+        log.info("Elaborazione transazione di €{} con metodo: {} per corsa ID: {}", importoTotale, metodo, idCorsa);
+
+        Corsa corsa = corsaRepository.findById(idCorsa)
+                .orElseThrow(() -> new IllegalArgumentException("Corsa non trovata"));
+
+        // Message: richiediAutorizzazione(importoTotale, metodo) a SistemaPagamentoEsterno
+        boolean autorizzata = richiediAutorizzazioneSistemaEsterno(importoTotale, metodo);
+
+        if (!autorizzata) {
+            // Sequenza 7.a: esitoNegativo -> erroreTransazione
+            throw new IllegalStateException("Impossibile elaborare il pagamento: carta rifiutata o fondi insufficienti");
+        }
+
+        // Return: esitoPositivo & setStatoPagamento(true)
+        corsa.setImporto(importoTotale);
+        corsaRepository.save(corsa);
+
+        return true;
+    }
+
+    // Simulazione del SistemaPagamentoEsterno
+    private boolean richiediAutorizzazioneSistemaEsterno(Double importo, String metodo) {
+        if (metodo != null && (metodo.equalsIgnoreCase("errore") || metodo.equalsIgnoreCase("rifiutata"))) {
+            return false; // Simula il rifiuto di pagamento per la Sequenza 7.a
+        }
+        return true;
+    }
+
 }

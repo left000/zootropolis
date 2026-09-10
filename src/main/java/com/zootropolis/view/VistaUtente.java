@@ -270,26 +270,96 @@ public class VistaUtente {
     // ==========================================
 
     // 1. richiedeTermineCorsa(idCorsa)
+//    @PostMapping("/utente/corse/termina/{id}")
+//    public String richiedeTermineCorsa(@PathVariable("id") Long idCorsa, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+//        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+//
+//        try {
+//            // 2. elaboraTermineCorsa(idCorsa) -> 7. confermaConclusioneNoleggio()
+//            gestioneCorse.elaboraTermineCorsa(idCorsa);
+//            redirectAttributes.addFlashAttribute("messaggio", "Corsa terminata con successo! Grazie per aver viaggiato con Zootropolis.");
+//            return "redirect:/utente/dashboard";
+//
+//        } catch (IllegalArgumentException e) {
+//            // Sequenza 3.a: 3.a.2 informa("Impossibile terminare: area di sosta non consentita")
+//            redirectAttributes.addFlashAttribute("erroreAreaNonConsentita", e.getMessage());
+//            return "redirect:/utente/corse/dettaglio/" + idCorsa;
+//
+//        } catch (IllegalStateException e) {
+//            // Sequenza 4.a: 4.a.2 informa("Anomalia tecnica: connessione con il veicolo fallita")
+//            // 4.a.3 operazioneAnnullata()
+//            redirectAttributes.addFlashAttribute("erroreConnessioneHardware", e.getMessage());
+//            return "redirect:/utente/corse/dettaglio/" + idCorsa;
+//        }
+//    }
+
     @PostMapping("/utente/corse/termina/{id}")
-    public String richiedeTermineCorsa(@PathVariable("id") Long idCorsa, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+    public String richiedeTermineCorsa(@PathVariable("id") Long idCorsa, HttpSession session, RedirectAttributes redirectAttributes) {
         if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
 
         try {
-            // 2. elaboraTermineCorsa(idCorsa) -> 7. confermaConclusioneNoleggio()
             gestioneCorse.elaboraTermineCorsa(idCorsa);
-            redirectAttributes.addFlashAttribute("messaggio", "Corsa terminata con successo! Grazie per aver viaggiato con Zootropolis.");
-            return "redirect:/utente/dashboard";
+            // Redireziona all'avvio del pagamento (UC-09)
+            return "redirect:/utente/corse/paga/" + idCorsa;
 
         } catch (IllegalArgumentException e) {
-            // Sequenza 3.a: 3.a.2 informa("Impossibile terminare: area di sosta non consentita")
             redirectAttributes.addFlashAttribute("erroreAreaNonConsentita", e.getMessage());
             return "redirect:/utente/corse/dettaglio/" + idCorsa;
-
         } catch (IllegalStateException e) {
-            // Sequenza 4.a: 4.a.2 informa("Anomalia tecnica: connessione con il veicolo fallita")
-            // 4.a.3 operazioneAnnullata()
             redirectAttributes.addFlashAttribute("erroreConnessioneHardware", e.getMessage());
             return "redirect:/utente/corse/dettaglio/" + idCorsa;
         }
+    }
+
+// ==========================================
+    // UC-09 PAGARE
+    // ==========================================
+
+    // 1. avviaPagamento(idCorsa)
+    @GetMapping("/utente/corse/paga/{id}")
+    public String avviaPagamento(@PathVariable("id") Long idCorsa, HttpSession session, Model model) {
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+
+        // 2. richiediCalcoloImporto(idCorsa) -> 3. mostraImportoTotale(importoTotale)
+        Double importoTotale = gestioneCorse.richiediCalcoloImporto(idCorsa);
+
+        model.addAttribute("idCorsa", idCorsa);
+        model.addAttribute("importoTotale", importoTotale);
+        return "pagamento";
+    }
+
+    // 5. confermaMetodoPagamento(metodo)
+    @PostMapping("/utente/corse/paga/conferma")
+    public String confermaMetodoPagamento(
+            @RequestParam("idCorsa") Long idCorsa,
+            @RequestParam("importoTotale") Double importoTotale,
+            @RequestParam("metodo") String metodo,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+
+        try {
+            // elaboraTransazione(...) -> 10. notificaSuccessoPagamento()
+            gestioneCorse.elaboraTransazione(idCorsa, importoTotale, metodo);
+            redirectAttributes.addFlashAttribute("messaggio", "Pagamento completato con successo! Importo addebitato: €" + importoTotale);
+            return "redirect:/utente/dashboard";
+
+        } catch (IllegalStateException e) {
+            // Sequenza 7.a: 7.a.2 informa("Impossibile elaborare il pagamento")
+            // 7.a.3 chiediNuovoMetodoOAnnulla()
+            model.addAttribute("idCorsa", idCorsa);
+            model.addAttribute("importoTotale", importoTotale);
+            model.addAttribute("erroreTransazione", e.getMessage());
+            return "pagamento";
+        }
+    }
+
+    // 4.a.1 / 7.a.3 annullaOperazione() -> operazioneInterrotta()
+    @GetMapping("/utente/corse/paga/annulla")
+    public String annullaPagamento(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Operazione di pagamento annullata.");
+        return "redirect:/utente/dashboard";
     }
 }

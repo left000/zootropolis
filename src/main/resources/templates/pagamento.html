@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagamento Corsa - Zootropolis</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .pay-container {
+            max-width: 500px;
+            margin: 3rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .price-badge {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #198754;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="pay-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>💳 Pagamento Corsa</h2>
+        <!-- 4.a.1 annullaOperazione() -->
+        <a th:href="@{/utente/corse/paga/annulla}" class="btn-danger-sm">Annulla</a>
+    </div>
+
+    <!-- SEQUENZA 7.a: ERRORE TRANSAZIONE -->
+    <div th:if="${erroreTransazione}" class="alert-error">
+        <strong>⚠️ Transazione Rifiutata:</strong> <span th:text="${erroreTransazione}">Impossibile elaborare il pagamento</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">7.a.3 Scegli un nuovo metodo di pagamento o annulla.</p>
+    </div>
+
+    <p style="color: #6c757d; text-align: center;">Riepilogo importo calcolato per la corsa #<span th:text="${idCorsa}">1</span>:</p>
+
+    <!-- 3. mostraImportoTotale(importoTotale) -->
+    <div class="price-badge">
+        € <span th:text="${#numbers.formatDecimal(importoTotale, 1, 2)}">3.50</span>
+    </div>
+
+    <!-- 5. confermaMetodoPagamento(metodo) -->
+    <form th:action="@{/utente/corse/paga/conferma}" method="post" style="margin-top: 1.5rem;">
+        <input type="hidden" name="idCorsa" th:value="${idCorsa}" />
+        <input type="hidden" name="importoTotale" th:value="${importoTotale}" />
+
+        <div style="margin-bottom: 1.2rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Seleziona Metodo di Pagamento:</label>
+            <select name="metodo" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ced4da;" required>
+                <option value="Carta di Credito (**** 4242)">💳 Carta di Credito (**** 4242)</option>
+                <option value="PayPal">🅿️ PayPal</option>
+                <option value="Apple Pay / Google Pay">📱 Apple Pay / Google Pay</option>
+                <option value="rifiutata">⚠️ Simula Carta Rifiutata (Test Errore 7.a)</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #198754; color: white; border: none; border-radius: 6px; cursor: pointer;">
+            Conferma e Paga
+        </button>
+    </form>
+
+</div>
+</body>
+</html>
