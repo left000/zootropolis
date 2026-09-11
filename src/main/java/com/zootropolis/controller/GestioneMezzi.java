@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -298,5 +299,44 @@ public class GestioneMezzi {
         }
 
         return risultati;
+    }
+
+    // ==========================================
+    // UC-16 BLOCCARE DA REMOTO
+    // ==========================================
+
+    // Message: elaboraBlocco(idMezzo)
+    @Transactional
+    public boolean elaboraBlocco(Long idMezzo) {
+        log.info("Elaborazione blocco remoto per mezzo ID: {}", idMezzo);
+
+        // Message: getDatiMezzo() & Self-Message: verificaEsistenza(idMezzo)
+        Mezzo mezzo = mezzoRepository.findById(idMezzo)
+                .orElseThrow(() -> new IllegalArgumentException("Mezzo non trovato")); // Sequenza 4.a: erroreMezzoInesistente
+
+        // Self-Message: inviaComandoBloccoFisico()
+        boolean bloccoRiuscito = inviaComandoBloccoFisico(idMezzo);
+        if (!bloccoRiuscito) {
+            // Sequenza 5.a: erroreConnessioneHardware
+            throw new IllegalStateException("Mancata connessione con il veicolo");
+        }
+
+        // Message: setStatoMezzo("BLOCCATO") / setStato(false)
+        mezzo.setStato(false); // Imposta il mezzo come fuori servizio/bloccato
+        mezzoRepository.save(mezzo);
+
+        // Return: bloccoCompletato
+        return true;
+    }
+
+    // Self-Message: inviaComandoBloccoFisico(idMezzo)
+    private boolean inviaComandoBloccoFisico(Long idMezzo) {
+        // Simula la fallimento della connessione hardware (Sequenza 5.a) se l'ID è 999
+        if (idMezzo != null && idMezzo == 999L) {
+            log.warn("Errore di connessione hardware con la centralina del mezzo ID: {}", idMezzo);
+            return false;
+        }
+        log.info("Comando di blocco fisico inviato con successo al mezzo ID: {}", idMezzo);
+        return true;
     }
 }

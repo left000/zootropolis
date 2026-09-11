@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dettagli Allarme - Zootropolis Operatori</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .alarm-container {
+            max-width: 600px;
+            margin: 3rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .alert-danger-box {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-success-box {
+            background-color: #d1e7dd;
+            border: 1px solid #badbcc;
+            color: #0f5132;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="alarm-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>🚨 Gestione Spostamento Anomalo</h2>
+        <a th:href="@{/operatore/anomalie}" class="btn btn-secondary" style="font-size: 0.85rem; text-decoration: none;">⬅️ Lista Anomalie</a>
+    </div>
+
+    <!-- 1. mostraAvvisoSpostamento() -->
+    <div style="background-color: #fff3cd; color: #856404; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: bold;">
+        ⚠️ <span th:text="${avvisoAnomalia}">Avviso Spostamento</span>
+    </div>
+
+    <!-- SEQUENZA 3.a: LOCALIZZAZIONE NON DISPONIBILE -->
+    <div th:if="${erroreNonRintracciabile}" class="alert-danger-box">
+        <h4>📡 3.a.2 Dati non recuperabili</h4>
+        <p th:text="${erroreNonRintracciabile}">Mezzo non rintracciabile</p>
+    </div>
+
+    <!-- SEQUENZA 3.b: RIENTRATA IN AREA CONSENTITA -->
+    <div th:if="${allarmeRisolto}" class="alert-success-box">
+        <h4>✅ 3.b.2 Allarme non più attivo</h4>
+        <p th:text="${allarmeRisolto}">Mezzo in area consentita</p>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE: MOSTRA DETTAGLI MEZZO -->
+    <div th:if="${dettagliAllarme != null}">
+        <h3 style="color: #dc3545; margin-top: 0;">Dettagli Allarme GPS Live</h3>
+
+        <div class="info-row">
+            <strong>ID Veicolo:</strong>
+            <span th:text="'#' + ${dettagliAllarme.idMezzo}">#1</span>
+        </div>
+        <div class="info-row">
+            <strong>Tipo Mezzo:</strong>
+            <span th:text="${dettagliAllarme.tipoMezzo}" style="text-transform: capitalize;">Monopattino</span>
+        </div>
+        <div class="info-row">
+            <strong>Posizione Attuale GPS:</strong>
+            <span th:text="${dettagliAllarme.posizioneAttuale}" style="font-weight: bold; color: #dc3545;">Via Roma 10</span>
+        </div>
+        <div class="info-row">
+            <strong>Stato Batteria:</strong>
+            <span th:text="${dettagliAllarme.percentualeBatteria + '%'}">80%</span>
+        </div>
+        <div class="info-row">
+            <strong>Tipo Segnalazione:</strong>
+            <span th:text="${dettagliAllarme.tipoAllarme}">Spostamento Non Autorizzato</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

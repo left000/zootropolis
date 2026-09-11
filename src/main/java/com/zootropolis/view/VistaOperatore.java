@@ -2,12 +2,17 @@ package com.zootropolis.view;
 
 import com.zootropolis.controller.GestioneAccount;
 import com.zootropolis.controller.GestioneMezzi;
+import com.zootropolis.controller.GestioneSegnalazioni;
+import com.zootropolis.dto.AccountDTO;
 import com.zootropolis.dto.AreaSquilibrataDTO;
+import com.zootropolis.dto.DettagliAllarmeDTO;
 import com.zootropolis.dto.MezzoDTO;
+import com.zootropolis.entity.Operatore;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,11 +24,45 @@ public class VistaOperatore {
 
     private final GestioneMezzi gestioneMezzi;
     private final GestioneAccount gestioneAccount;
+    private final GestioneSegnalazioni gestioneSegnalazioni;
 
-    public VistaOperatore(GestioneMezzi gestioneMezzi, GestioneAccount gestioneAccount) {
+    public VistaOperatore(GestioneMezzi gestioneMezzi, GestioneAccount gestioneAccount, GestioneSegnalazioni gestioneSegnalazioni) {
         this.gestioneMezzi = gestioneMezzi;
         this.gestioneAccount = gestioneAccount;
+        this.gestioneSegnalazioni = gestioneSegnalazioni;
     }
+
+
+    // Metodo Helper per verificare se l'utente in sessione è un Operatore
+    private boolean isOperatore(HttpSession session) {
+        Object account = session.getAttribute("accountLoggato");
+        if (account == null) return false;
+
+        // Controllo se l'entità a DB è istanza di Operatore o ha il ruolo dedicato
+        if (account instanceof Operatore) return true;
+        if (account instanceof AccountDTO) {
+            return "OPERATORE".equalsIgnoreCase(((AccountDTO) account).getRuolo());
+        }
+        return false;
+    }
+
+    // DASHBOARD OPERATORE
+    @GetMapping("/operatore/dashboard")
+    public String dashboardOperatore(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        if (!isOperatore(session)) {
+            redirectAttributes.addFlashAttribute("errore", "Accesso negato: Area riservata esclusivamente agli operatori.");
+            return "redirect:/utente/dashboard";
+        }
+
+        Object account = session.getAttribute("accountLoggato");
+        model.addAttribute("operatore", account);
+        return "dashboard_operatore";
+    }
+
+
+
+
+
 
     // ==========================================
     // UC-11 VISUALIZZARE MEZZI
@@ -156,6 +195,84 @@ public class VistaOperatore {
     // annullaOperazione() -> operazioneAnnullata()
     @GetMapping("/operatore/account/sospendi/annulla")
     public String annullaSospensioneAccount(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
+        return "redirect:/utente/dashboard";
+    }
+
+    // ==========================================
+    // UC-15 GESTIRE SPOSTAMENTI ANOMALI
+    // ==========================================
+
+    // 1. mostraAvvisoSpostamento() & 2. richiediDettagliAllarme()
+    @GetMapping("/operatore/allarmi/dettaglio/{id}")
+    public String richiediDettagliAllarme(@PathVariable("id") Long idMezzo, HttpSession session, Model model) {
+        if (session.getAttribute("accountLoggato") == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("idMezzo", idMezzo);
+        model.addAttribute("avvisoAnomalia", gestioneSegnalazioni.generaAvvisoAnomalia(idMezzo));
+
+        try {
+            // 3. recuperaDettagliAllarme() -> 4. mostraDettagliMezzo(dettagliAllarme)
+            DettagliAllarmeDTO dettagliAllarme = gestioneSegnalazioni.recuperaDettagliAllarme(idMezzo);
+            model.addAttribute("dettagliAllarme", dettagliAllarme);
+            return "dettagli_allarme";
+
+        } catch (IllegalStateException e) {
+            // Sequenza 3.a: 3.a.2 informa("Dati non recuperabili, mezzo non rintracciabile")
+            model.addAttribute("erroreNonRintracciabile", e.getMessage());
+            return "dettagli_allarme";
+
+        } catch (IllegalArgumentException e) {
+            // Sequenza 3.b: 3.b.2 informa("Allarme non più attivo: mezzo in area consentita")
+            model.addAttribute("allarmeRisolto", e.getMessage());
+            return "dettagli_allarme";
+        }
+    }
+
+    // ==========================================
+    // UC-16 BLOCCARE DA REMOTO
+    // ==========================================
+
+    // 1. richiediBloccoForzato() -> 2. richiediIdentificativoMezzo()
+    @GetMapping("/operatore/mezzi/blocco-remoto")
+    public String richiediBloccoForzato(HttpSession session) {
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+        return "blocco_remoto_mezzo";
+    }
+
+    // 3. fornisciIdentificativo(idMezzo)
+    @PostMapping("/operatore/mezzi/blocco-remoto")
+    public String elaboraBloccoRemoto(
+            @RequestParam("idMezzo") Long idMezzo,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+
+        try {
+            // elaboraBlocco(idMezzo) -> 7. confermaBloccoEseguito()
+            gestioneMezzi.elaboraBlocco(idMezzo);
+            redirectAttributes.addFlashAttribute("messaggio", "Blocco da remoto eseguito con successo per il veicolo #" + idMezzo);
+            return "redirect:/operatore/mezzi/blocco-remoto";
+
+        } catch (IllegalArgumentException e) {
+            // Sequenza 4.a: 4.a.2 informa("Mezzo non trovato") -> 4.a.3 chiediNuovoIDoAnnulla()
+            model.addAttribute("erroreMezzoInesistente", e.getMessage());
+            return "blocco_remoto_mezzo";
+
+        } catch (IllegalStateException e) {
+            // Sequenza 5.a: 5.a.2 segnalaAnomalia("Mancata connessione con il veicolo") -> 5.a.3 operazioneAnnullata()
+            model.addAttribute("erroreConnessioneHardware", e.getMessage());
+            return "blocco_remoto_mezzo";
+        }
+    }
+
+    // annullaOperazione() -> operazioneAnnullata()
+    @GetMapping("/operatore/mezzi/blocco-remoto/annulla")
+    public String annullaBloccoRemoto(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
         return "redirect:/utente/dashboard";
     }

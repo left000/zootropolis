@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blocco Remoto Veicolo - Zootropolis Operatori</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .block-container {
+            max-width: 550px;
+            margin: 3rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-success {
+            background-color: #d1e7dd;
+            border: 1px solid #badbcc;
+            color: #0f5132;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="block-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>🔒 Blocco Remoto Veicolo</h2>
+        <!-- annullaOperazione() -->
+        <a th:href="@{/operatore/mezzi/blocco-remoto/annulla}" class="btn-danger-sm">Annulla</a>
+    </div>
+
+    <!-- MESSAGGIO CONFERMA BLOCCO ESEGUITO -->
+    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
+
+    <!-- SEQUENZA 4.a: ERRORE MEZZO INESISTENTE -->
+    <div th:if="${erroreMezzoInesistente}" class="alert-error">
+        <strong>⚠️ Errore:</strong> <span th:text="${erroreMezzoInesistente}">Mezzo non trovato</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Inserisci un identificativo veicolo valido o annulla.</p>
+    </div>
+
+    <!-- SEQUENZA 5.a: ERRORE CONNESSIONE HARDWARE -->
+    <div th:if="${erroreConnessioneHardware}" class="alert-error">
+        <strong>⚠️ Anomalia Tecnica:</strong> <span th:text="${erroreConnessioneHardware}">Mancata connessione con il veicolo</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Impossibile comunicare con la centralina del veicolo. Operazione annullata.</p>
+    </div>
+
+    <!-- 2. richiediIdentificativoMezzo() / 3. fornisciIdentificativo(idMezzo) -->
+    <form th:action="@{/operatore/mezzi/blocco-remoto}" method="post">
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Identificativo Veicolo (ID Mezzo):</label>
+            <input type="number" name="idMezzo" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;" placeholder="Es. 1" required />
+        </div>
+
+        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">
+            🛑 Invia Comando Blocco Fisico
+        </button>
+    </form>
+
+</div>
+</body>
+</html>

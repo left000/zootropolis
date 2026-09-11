@@ -28,6 +28,12 @@ public class VistaUtente {
         this.gestioneCorse = gestioneCorse;
     }
 
+    // Reindirizza la radice dell'applicazione direttamente al Login
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/login";
+    }
+
     // ==========================================
     // DASHBOARD UTENTE
     // ==========================================

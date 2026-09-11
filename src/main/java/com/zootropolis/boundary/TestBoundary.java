@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestBoundary {
 
-    @GetMapping("/")
+    @GetMapping("/test")
     public String testServer() {
         return "Zootropolis Server è online e funzionante!";
     }
