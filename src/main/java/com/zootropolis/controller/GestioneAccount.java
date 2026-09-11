@@ -8,6 +8,7 @@ import com.zootropolis.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -88,5 +89,30 @@ public class GestioneAccount {
     // Self-message: validaCredenziali(...)
     private boolean validaCredenziali(String email, String passwordInserita, String credenzialiRegistrate) {
         return passwordInserita != null && passwordInserita.equals(credenzialiRegistrate);
+    }
+
+
+// ==========================================
+    // UC-14 BLOCCARE ACCOUNT
+    // ==========================================
+
+    @Transactional
+    public boolean elaboraSospensione(Long idAccount) {
+        log.info("Elaborazione sospensione account per ID: {}", idAccount);
+
+        Account account = accountRepository.findById(idAccount)
+                .orElseThrow(() -> new IllegalArgumentException("Account non trovato")); // Sequenza 4.a
+
+        // Usa getStatoAccount() fornito da Lombok per leggere 'statoAccount'
+        if (Boolean.FALSE.equals(account.getStatoAccount())) {
+            // Sequenza 4.b: erroreAccountGiaSospeso
+            throw new IllegalStateException("Account già sospeso o disattivato");
+        }
+
+        // Message: setStatoAccount(false) / disabilita account
+        account.setStatoAutenticazione(false);
+        accountRepository.save(account);
+
+        return true;
     }
 }

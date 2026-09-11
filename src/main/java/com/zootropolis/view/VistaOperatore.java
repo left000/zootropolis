@@ -1,5 +1,6 @@
 package com.zootropolis.view;
 
+import com.zootropolis.controller.GestioneAccount;
 import com.zootropolis.controller.GestioneMezzi;
 import com.zootropolis.dto.AreaSquilibrataDTO;
 import com.zootropolis.dto.MezzoDTO;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -16,9 +18,11 @@ import java.util.List;
 public class VistaOperatore {
 
     private final GestioneMezzi gestioneMezzi;
+    private final GestioneAccount gestioneAccount;
 
-    public VistaOperatore(GestioneMezzi gestioneMezzi) {
+    public VistaOperatore(GestioneMezzi gestioneMezzi, GestioneAccount gestioneAccount) {
         this.gestioneMezzi = gestioneMezzi;
+        this.gestioneAccount = gestioneAccount;
     }
 
     // ==========================================
@@ -108,5 +112,51 @@ public class VistaOperatore {
         model.addAttribute("areeSquilibrate", areeSquilibrate);
 
         return "redistribuisci_mezzi";
+    }
+
+    // ==========================================
+    // UC-14 BLOCCARE ACCOUNT
+    // ==========================================
+
+    // 1. richiediSospensioneAccount() -> 2. richiediIdentificativoAccount()
+    @GetMapping("/operatore/account/sospendi")
+    public String richiediSospensioneAccount(HttpSession session) {
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+        return "sospendi_account";
+    }
+
+    // 3. fornisciIdentificativo(idAccount)
+    @PostMapping("/operatore/account/sospendi")
+    public String elaboraSospensioneAccount(
+            @RequestParam("idAccount") Long idAccount,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
+
+        try {
+            // elaboraSospensione(idAccount) -> 6. confermaBloccoEseguito()
+            gestioneAccount.elaboraSospensione(idAccount);
+            redirectAttributes.addFlashAttribute("messaggio", "Blocco eseguito con successo per l'account #" + idAccount);
+            return "redirect:/operatore/account/sospendi";
+
+        } catch (IllegalArgumentException e) {
+            // Sequenza 4.a: 4.a.2 informa("Account non trovato") -> 4.a.3 richiediNuovoIDoAnnulla()
+            model.addAttribute("erroreAccountInesistente", e.getMessage());
+            return "sospendi_account";
+
+        } catch (IllegalStateException e) {
+            // Sequenza 4.b: 4.b.2 informa("Account già sospeso o disattivato")
+            model.addAttribute("erroreAccountGiaSospeso", e.getMessage());
+            return "sospendi_account";
+        }
+    }
+
+    // annullaOperazione() -> operazioneAnnullata()
+    @GetMapping("/operatore/account/sospendi/annulla")
+    public String annullaSospensioneAccount(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
+        return "redirect:/utente/dashboard";
     }
 }

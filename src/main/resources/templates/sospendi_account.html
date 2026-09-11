@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bloccare Account - Zootropolis Operatori</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .suspend-container {
+            max-width: 550px;
+            margin: 3rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-success {
+            background-color: #d1e7dd;
+            border: 1px solid #badbcc;
+            color: #0f5132;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="suspend-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>🚫 Sospensione Account</h2>
+        <!-- annullaOperazione() -->
+        <a th:href="@{/operatore/account/sospendi/annulla}" class="btn-danger-sm">Annulla</a>
+    </div>
+
+    <!-- MESSAGGIO CONFERMA BLOCCO ESEGUITO -->
+    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
+
+    <!-- SEQUENZA 4.a: ERRORE ACCOUNT INESISTENTE -->
+    <div th:if="${erroreAccountInesistente}" class="alert-error">
+        <strong>⚠️ Errore:</strong> <span th:text="${erroreAccountInesistente}">Account non trovato</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Inserisci un identificativo valido oppure annulla l'operazione.</p>
+    </div>
+
+    <!-- SEQUENZA 4.b: ERRORE ACCOUNT GIÀ SOSPESO -->
+    <div th:if="${erroreAccountGiaSospeso}" class="alert-error">
+        <strong>⚠️ Attenzione:</strong> <span th:text="${erroreAccountGiaSospeso}">Account già sospeso o disattivato</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem;">L'utente specificato risulta già disabilitato nel sistema.</p>
+    </div>
+
+    <!-- 2. richiediIdentificativoAccount() / 3. fornisciIdentificativo(idAccount) -->
+    <form th:action="@{/operatore/account/sospendi}" method="post">
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Identificativo Account (ID Utente):</label>
+            <input type="number" name="idAccount" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;" placeholder="Es. 10" required />
+        </div>
+
+        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">
+            🔒 Conferma Blocco Account
+        </button>
+    </form>
+
+</div>
+</body>
+</html>
