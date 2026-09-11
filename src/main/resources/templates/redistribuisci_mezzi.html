@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Redistribuzione Mezzi - Zootropolis Operatori</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .redistribution-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .balance-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-eccedenza {
+            border-left: 5px solid #dc3545;
+        }
+        .card-carenza {
+            border-left: 5px solid #ffc107;
+        }
+        .empty-state {
+            background: #e8f5e9;
+            border: 2px dashed #81c784;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            color: #2e7d32;
+        }
+        .badge-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="redistribution-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>⚖️ Analisi e Redistribuzione Flotta</h2>
+        <a th:href="@{/utente/dashboard}" class="btn btn-secondary" style="font-size: 0.85rem; text-decoration: none;">⬅️ Dashboard</a>
+    </div>
+
+    <!-- SEQUENZA 2.a: DISTRIBUZIONE DEI MEZZI OTTIMALE -->
+    <div th:if="${#lists.isEmpty(areeSquilibrate)}" class="empty-state">
+        <span style="font-size: 3rem;">✨</span>
+        <h3>Distribuzione dei mezzi ottimale</h3>
+        <p>Tutte le zone del parco e della città presentano un numero bilanciato di veicoli.</p>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE: MOSTRA MAPPA SQUILIBRI -->
+    <div th:if="${!#lists.isEmpty(areeSquilibrate)}">
+        <p style="color: #6c757d; margin-bottom: 1rem;">
+            Rilevati <strong th:text="${#lists.size(areeSquilibrate)}" style="color: #dc3545;">0</strong> punti critici che richiedono lo spostamento di veicoli:
+        </p>
+
+        <div th:each="area : ${areeSquilibrate}"
+             class="balance-card"
+             th:classappend="${area.tipoSquilibrio == 'ECCEDENZA' ? 'card-eccedenza' : 'card-carenza'}">
+
+            <div>
+                <h4 style="margin: 0 0 0.4rem 0; color: #2c3e50;" th:text="${area.nomeArea}">Nome Zona</h4>
+                <p style="margin: 0.2rem 0; font-size: 0.9rem; color: #6c757d;">
+                    Mezzi presenti: <strong th:text="${area.mezzePresenti}">0</strong> / Capacità Suggerita: <span th:text="${area.capacitaMassima}">0</span>
+                </p>
+                <p style="margin: 0.2rem 0; font-size: 0.85rem; font-weight: bold;"
+                   th:style="${area.tipoSquilibrio == 'ECCEDENZA' ? 'color: #dc3545;' : 'color: #856404;'}">
+                    Azione richiesta: <span th:text="${area.tipoSquilibrio == 'ECCEDENZA' ? 'Rimuovere ' + area.deltaMezzi + ' veicoli' : 'Aggiungere ' + area.deltaMezzi + ' veicoli'}">Spostare mezzi</span>
+                </p>
+            </div>
+
+            <div>
+                <span th:if="${area.tipoSquilibrio == 'ECCEDENZA'}" class="badge-danger">🔴 ECCEDENZA</span>
+                <span th:if="${area.tipoSquilibrio == 'CARENZA'}" class="badge-warning">🟡 CARENZA</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitoraggio Anomalie - Zootropolis Operatori</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .admin-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .anomaly-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #dc3545;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .empty-state {
+            background: #e8f5e9;
+            border: 2px dashed #81c784;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            color: #2e7d32;
+        }
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="admin-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>🛠️ Monitoraggio Malfunzionamenti (Area Operatore)</h2>
+        <a th:href="@{/utente/dashboard}" class="btn btn-secondary" style="font-size: 0.85rem; text-decoration: none;">⬅️ Dashboard</a>
+    </div>
+
+    <!-- SEQUENZA 2.a: NESSUNA ANOMALIA PRESENTE -->
+    <div th:if="${#lists.isEmpty(listaMezziAnomali)}" class="empty-state">
+        <span style="font-size: 3rem;">✅</span>
+        <h3>Nessuna anomalia presente</h3>
+        <p>Tutti i mezzi in rete risultano pienamente operativi e con carica sufficiente.</p>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE: MOSTRA ELENCO ANOMALIE -->
+    <div th:if="${!#lists.isEmpty(listaMezziAnomali)}">
+        <p style="color: #6c757d; margin-bottom: 1rem;">
+            Trovati <strong th:text="${#lists.size(listaMezziAnomali)}" style="color: #dc3545;">0</strong> veicoli che richiedono manutenzione:
+        </p>
+
+        <div th:each="m : ${listaMezziAnomali}" class="anomaly-card">
+            <div>
+                <h4 style="margin: 0 0 0.4rem 0; color: #2c3e50;">
+                    Mezzo #<span th:text="${m.id}">1</span> - <span th:text="${m.tipo}" style="text-transform: capitalize;">Monopattino</span>
+                </h4>
+                <p style="margin: 0.2rem 0; font-size: 0.9rem; color: #6c757d;">
+                    📍 Posizione Attuale: <strong th:text="${m.posizione}">Via Roma 10</strong>
+                </p>
+                <p style="margin: 0.2rem 0; font-size: 0.85rem; color: #dc3545; font-weight: bold;">
+                    ⚠️ Diagnostica: <span th:text="${m.descrizioneAnomalia}">Batteria scarica</span>
+                </p>
+            </div>
+
+            <div style="text-align: right;">
+                <span class="badge-warning" th:text="'🔋 Batteria: ' + (${m.percentualeBatteria != null ? m.percentualeBatteria + '%' : '0%'})">🔋 5%</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

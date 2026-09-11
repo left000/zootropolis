@@ -1,5 +1,6 @@
 package com.zootropolis.controller;
 
+import com.zootropolis.dto.AreaSquilibrataDTO;
 import com.zootropolis.dto.MezzoDTO;
 import com.zootropolis.entity.Mezzo;
 import com.zootropolis.exception.EccezioneMezzoNonDisponibile;
@@ -172,5 +173,130 @@ public class GestioneMezzi {
             log.info("Raggio di ricerca ridotto a: {} km", raggioRicerca);
         }
         return ricercaMezziInternal();
+    }
+
+    // ==========================================
+    // UC-11 VISUALIZZARE MEZZI
+    // ==========================================
+
+    // Message: richiediDatiMezzi()
+    public List<MezzoDTO> richiediDatiMezzi(boolean ignoraLocalizzazioneLive) {
+        log.info("Recupero dati mezzi per mappa operatore...");
+
+        List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
+
+        // Self-Message: verificaStatoVeicoli()
+        if (tuttiIMezzi.isEmpty()) {
+            // Sequenza 2.b: eccezioneNessunVeicolo
+            throw new IllegalStateException("Nessun mezzo da mostrare");
+        }
+
+        // Simulazione Sequenza 2.a: Se la localizzazione live fallisce e non si accettano i dati noti
+        if (!ignoraLocalizzazioneLive && "OFFLINE".equalsIgnoreCase(this.getPosizioneAttualeUtente())) {
+            // Sequenza 2.a: eccezioneLocalizzazioneAssente
+            throw new IllegalArgumentException("Impossibile mostrare dati in tempo reale");
+        }
+
+        // Message: getPosizione() -> Return: listaDatiMezzi
+        return tuttiIMezzi.stream()
+                .map(this::convertiInDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Message: richiediUltimiDatiNoti()
+    public List<MezzoDTO> richiediUltimiDatiNoti() {
+        log.info("Recupero ultimi dati noti dei mezzi...");
+        return richiediDatiMezzi(true);
+    }
+
+    // ==========================================
+    // UC-12 MONITORARE MALFUNZIONAMENTI
+    // ==========================================
+
+    // Message: richiediElencoAnomalie()
+    public List<MezzoDTO> richiediElencoAnomalie() {
+        log.info("Recupero mezzi con anomalie o malfunzionamenti...");
+
+        List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
+
+        // Self-Message: filtraMezziAnomali()
+        List<Mezzo> mezziAnomali = filtraMezziAnomali(tuttiIMezzi);
+
+        if (mezziAnomali.isEmpty()) {
+            // Sequenza 2.a: listaVuota
+            return new ArrayList<>();
+        }
+
+        // Message: getDettagliDiagnostici() & Return: listaMezziAnomali
+        return mezziAnomali.stream().map(mezzo -> {
+            MezzoDTO dto = convertiInDTO(mezzo);
+            // Simula/Arricchisce con i dettagli diagnostici rilevati
+            dto.setDescrizioneAnomalia(ottieniDettagliDiagnostici(mezzo));
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    // Self-Message: filtraMezziAnomali()
+    private List<Mezzo> filtraMezziAnomali(List<Mezzo> mezzi) {
+        return mezzi.stream()
+                .filter(m -> {
+                    // Un mezzo ha un'anomalia se lo stato è false (inattivo/guasto)
+                    // oppure se la percentuale di batteria è <= 10%
+                    boolean guasto = Boolean.FALSE.equals(m.getStato());
+                    boolean batteriaScarica = m.getPercentualeBatteria() != null && m.getPercentualeBatteria() <= 10;
+                    return guasto || batteriaScarica;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // Message: getDettagliDiagnostici() su :Mezzo
+    private String ottieniDettagliDiagnostici(Mezzo mezzo) {
+        if (mezzo.getPercentualeBatteria() != null && mezzo.getPercentualeBatteria() <= 10) {
+            return "Batteria Critica (" + mezzo.getPercentualeBatteria() + "%) - Ricarica richiesta";
+        }
+        return "Anomalia Hardware/Blocco Sensori - Intervento manutenzione necessario";
+    }
+
+    // ==========================================
+    // UC-13 REDISTRIBUIRE
+    // ==========================================
+
+    // Message: analizzaDistribuzioneMezzi()
+    public List<AreaSquilibrataDTO> analizzaDistribuzioneMezzi() {
+        log.info("Analisi distribuzione mezzi per rilevamento squilibri...");
+
+        List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
+
+        // Self-Message: calcolaCarenzeEdEccedenze()
+        List<AreaSquilibrataDTO> areeSquilibrate = calcolaCarenzeEdEccedenze(tuttiIMezzi);
+
+        if (areeSquilibrate.isEmpty()) {
+            // Sequenza 2.a: distribuzioneOttimale
+            return new ArrayList<>();
+        }
+
+        // Return: listaAreeSquilibrate
+        return areeSquilibrate;
+    }
+
+    // Self-Message: calcolaCarenzeEdEccedenze()
+    private List<AreaSquilibrataDTO> calcolaCarenzeEdEccedenze(List<Mezzo> mezzi) {
+        List<AreaSquilibrataDTO> risultati = new ArrayList<>();
+
+        // Mappatura delle posizioni attuali dei mezzi
+        long contatoreCentro = mezzi.stream().filter(m -> m.getPosizione() != null && m.getPosizione().toLowerCase().contains("roma")).count();
+        long contatoreStazione = mezzi.stream().filter(m -> m.getPosizione() != null && m.getPosizione().toLowerCase().contains("stazione")).count();
+
+        // Area Centro (Capacità: 5) -> Eccedenza se > 5
+        if (contatoreCentro > 5) {
+            risultati.add(new AreaSquilibrataDTO("Zona Centro - Via Roma", (int) contatoreCentro, 5, "ECCEDENZA", (int) contatoreCentro - 5));
+        }
+
+        // Area Stazione (Capacità: 8) -> Carenza se < 2
+        if (contatoreStazione < 2) {
+            risultati.add(new AreaSquilibrataDTO("Zona Stazione Centrale", (int) contatoreStazione, 8, "CARENZA", 2 - (int) contatoreStazione));
+        }
+
+        return risultati;
     }
 }

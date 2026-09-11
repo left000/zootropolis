@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mappa Flotta - Zootropolis Operatori</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .map-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .map-box {
+            width: 100%;
+            height: 300px;
+            background: #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ced4da;
+            margin-bottom: 1.5rem;
+        }
+        .grid-fleet {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .fleet-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .alert-warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-error-box {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .btn-danger-sm {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="map-container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>🗺️ Mappa Generale Flotta (Operatore)</h2>
+        <a th:href="@{/operatore/mezzi/mappa/annulla}" class="btn-danger-sm">Annulla</a>
+    </div>
+
+    <!-- SEQUENZA 2.b: NESSUN MEZZO DA MOSTRARE -->
+    <div th:if="${erroreNessunVeicolo}" class="alert-error-box">
+        <h4>⚠️ 2.b.2 Nessun mezzo da mostrare</h4>
+        <p>Non ci sono veicoli registrati nel sistema da poter visualizzare sulla mappa.</p>
+    </div>
+
+    <!-- SEQUENZA 2.a: LOCALIZZAZIONE ASSENTE & PROMPT ULTIMI DATI NOTI -->
+    <div th:if="${chiediUltimiDatiNoti}" class="alert-warning-box">
+        <h4>📡 2.a.2 Impossibile mostrare dati in tempo reale</h4>
+        <p>2.a.3 La rete GPS riscontra problemi di comunicazione. Vuoi mostrare gli ultimi dati noti?</p>
+        <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+            <!-- 2.a.4 accettaUltimiDati() -->
+            <a th:href="@{/operatore/mezzi/mappa(usaDatiNoti=true)}" class="btn btn-primary" style="text-decoration: none;">Accetta e Mostra Noti</a>
+            <!-- 2.a.4 rifiutaUltimiDati() -->
+            <a th:href="@{/operatore/mezzi/mappa/annulla}" class="btn-danger-sm">Rifiuta e Annulla</a>
+        </div>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE / 2.a.6: MOSTRA MAPPA E LISTA DATI MEZZI -->
+    <div th:if="${listaDatiMezzi != null and !listaDatiMezzi.empty}">
+
+        <div th:if="${datiNotiUsati}" style="background-color: #e2e3e5; color: #383d41; padding: 0.6rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem;">
+            ℹ️ <strong>Modalità Offline:</strong> Visualizzazione basata sugli ultimi dati noti registrati.
+        </div>
+
+        <div class="map-box">
+            <span style="font-size: 2.5rem;">🌍</span>
+            <strong>Mappa di Pressione e Distribuzione Flotta</strong>
+            <span style="font-size: 0.9rem; color: #6c757d;" th:text="${#lists.size(listaDatiMezzi)} + ' veicoli monitorati in rete'"></span>
+        </div>
+
+        <h3>Elenco Completo Veicoli</h3>
+        <div class="grid-fleet" style="margin-top: 1rem;">
+            <div th:each="m : ${listaDatiMezzi}" class="fleet-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h4 style="margin: 0;" th:text="'Mezzo #' + ${m.id} + ' (' + ${m.tipo} + ')'">Mezzo #1</h4>
+                    <span th:text="${m.stato ? '🟢 Attivo' : '🔴 Inattivo'}" style="font-size: 0.85rem; font-weight: bold;">🟢 Attivo</span>
+                </div>
+                <p style="margin: 0.3rem 0; font-size: 0.9rem; color: #6c757d;">
+                    📍 Posizione: <strong th:text="${m.posizione}">Via Roma 10</strong>
+                </p>
+                <p style="margin: 0.3rem 0; font-size: 0.9rem; color: #6c757d;">
+                    🔋 Batteria: <strong th:text="${m.percentualeBatteria != null ? m.percentualeBatteria + '%' : 'N/D'}">80%</strong>
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
