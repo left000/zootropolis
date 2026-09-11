@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -304,4 +305,36 @@ public class GestioneCorse {
         return true;
     }
 
+    // ==========================================
+    // UC-10 VISUALIZZARE STORICO
+    // ==========================================
+
+    // Message: richiediCorseConcluse(idUtente)
+    public List<CorsaDTO> richiediCorseConcluse(Long idUtente) {
+        log.info("Recupero storico corse per utente ID: {}", idUtente);
+
+        // Message: getCorseUtente(idUtente) su :Corsa -> Return: listaCorse
+        List<Corsa> corseTrovate = corsaRepository.findByUtenteIdAndOraFineIsNotNull(idUtente);
+
+        if (corseTrovate.isEmpty()) {
+            // Sequenza 2.a: listaVuota
+            return new ArrayList<>();
+        }
+
+        // Self-Message: ordinaCronologicamente(listaCorse)
+        ordinaCronologicamente(corseTrovate);
+
+        // Return: storicoCorse (convertiti in DTO)
+        return corseTrovate.stream()
+                .map(this::convertiInDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Self-Message: ordinaCronologicamente(listaCorse)
+    private void ordinaCronologicamente(List<Corsa> listaCorse) {
+        listaCorse.sort((c1, c2) -> {
+            if (c1.getOraInizio() == null || c2.getOraInizio() == null) return 0;
+            return c2.getOraInizio().compareTo(c1.getOraInizio()); // Ordine decrescente (più recenti prima)
+        });
+    }
 }

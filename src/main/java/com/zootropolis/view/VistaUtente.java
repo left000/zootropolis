@@ -362,4 +362,32 @@ public class VistaUtente {
         redirectAttributes.addFlashAttribute("messaggio", "Operazione di pagamento annullata.");
         return "redirect:/utente/dashboard";
     }
+
+    // ==========================================
+    // UC-10 VISUALIZZARE STORICO
+    // ==========================================
+
+    // 1. richiedeStoricoViaggi()
+    @GetMapping("/utente/corse/storico")
+    public String richiedeStoricoViaggi(HttpSession session, Model model) {
+        Object account = session.getAttribute("accountLoggato");
+        if (account == null) return "redirect:/login";
+
+        Long idUtente = null;
+        if (account instanceof AccountDTO) {
+            idUtente = ((AccountDTO) account).getId();
+        } else if (account instanceof Account) {
+            idUtente = ((Account) account).getId();
+        }
+
+        if (idUtente != null) {
+            // 2. richiediCorseConcluse()
+            List<CorsaDTO> storicoCorse = gestioneCorse.richiediCorseConcluse(idUtente);
+
+            // 3. mostraStorico(storicoCorse) / 2.a.2 informa("Storico dei viaggi vuoto")
+            model.addAttribute("storicoCorse", storicoCorse);
+        }
+
+        return "storico_viaggi";
+    }
 }
