@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pannello Amministrazione - Zootropolis</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        .admin-box {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .card-panel {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body style="display: block;">
+<div th:replace="~{header :: appHeader}"></div>
+
+<div class="admin-box">
+
+    <h2>📈 UC-17 Ricevere Report (Amministrazione)</h2>
+
+    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
+    <div th:if="${erroreNessunDato}" class="alert-error" th:text="${erroreNessunDato}"></div>
+
+    <!-- SEQUENZA 1.a: REPORT AUTOMATICO -->
+    <div class="card-panel">
+        <h3>⚙️ Sequenza 1.a: Imposta Ricezione Automatica</h3>
+        <form th:action="@{/amministrazione/report/automatico}" method="post" style="display: flex; gap: 1rem; align-items: center;">
+            <select name="frequenza" class="form-control" style="padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;">
+                <option value="GIORNALIERO">Giornaliero</option>
+                <option value="SETTIMANALE">Settimanale</option>
+                <option value="MENSILE">Mensile</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Salva Frequenza Timer</button>
+        </form>
+    </div>
+
+    <!-- SEQUENZA PRINCIPALE: REPORT MANUALE -->
+    <div class="card-panel">
+        <h3>📊 Generazione Manuale Report Utilizzo</h3>
+        <form th:action="@{/amministrazione/report/manuale}" method="post" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+            <div>
+                <label>Data Inizio:</label>
+                <input type="date" name="dataInizio" class="form-control" style="width: 100%; padding: 0.5rem;" required />
+            </div>
+            <div>
+                <label>Data Fine:</label>
+                <input type="date" name="dataFine" class="form-control" style="width: 100%; padding: 0.5rem;" required />
+            </div>
+            <button type="submit" class="btn btn-success" style="background-color: #198754; color: white;">Genera Report</button>
+        </form>
+    </div>
+    <div class="card-panel">
+        <h3>🚧 Lavori Urbani (UC-18)</h3>
+        <p>Inserisci i dati geografici/temporali di nuovi cantieri per contrassegnare automaticamente l'area come <strong>VIETATA</strong>.</p>
+        <a th:href="@{/amministrazione/lavori-urbani}" class="btn btn-warning" style="text-decoration: none; color: #212529;">Inserisci Lavori Urbani</a>
+    </div>
+    <!-- 3. mostraReport(datiFormattati) -->
+    <div th:if="${datiFormattati}" class="card-panel" style="border-left: 5px solid #198754;">
+        <h3 style="color: #198754;">📄 Dati Report Generato</h3>
+        <p style="font-size: 1.1rem; font-weight: bold; background: #f8f9fa; padding: 1rem; border-radius: 6px;" th:text="${datiFormattati}">
+            Periodo: ...
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

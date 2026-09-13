@@ -3,8 +3,11 @@
 <body>
 
 <header th:fragment="appHeader" style="background-color: #ffffff; border-bottom: 2px solid #e9ecef; padding: 0.8rem 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
-    <!-- LOGO DINAMICO IN BASE AL RUOLO IN SESSIONE -->
-    <a th:href="${session.accountLoggato != null and session.accountLoggato.class.simpleName == 'Operatore'} ? @{/operatore/dashboard} : @{/utente/dashboard}"
+    <!-- LOGO DINAMICO POLIMORFICO IN BASE AL RUOLO -->
+    <a th:href="${session.accountLoggato != null} ?
+           (${session.accountLoggato.class.simpleName == 'Amministrazione'} ? @{/amministrazione/dashboard} :
+           (${session.accountLoggato.class.simpleName == 'Operatore'} ? @{/operatore/dashboard} : @{/utente/dashboard}))
+           : @{/login}"
        class="brand-logo"
        style="text-decoration: none; color: white; font-weight: bold; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
         🦁 <span>Zootropolis</span>
