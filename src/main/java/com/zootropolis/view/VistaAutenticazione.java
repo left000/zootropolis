@@ -72,4 +72,38 @@ public class VistaAutenticazione {
         redirectAttributes.addFlashAttribute("messaggio", "Logout effettuato con successo.");
         return "redirect:/login";
     }
+
+    // 1. mostraFormRegistrazione()
+    @GetMapping("/utente/registrazione")
+    public String mostraFormRegistrazione(Model model) {
+        if (!model.containsAttribute("registrazioneDTO")) {
+            model.addAttribute("registrazioneDTO", new com.zootropolis.dto.RegistrazioneDTO());
+        }
+        return "registrazione"; // Nome del file HTML della registrazione
+    }
+
+    // 2. elaboraRegistrazione()
+    @PostMapping("/utente/registrazione")
+    public String effettuaRegistrazione(@ModelAttribute("registrazioneDTO") com.zootropolis.dto.RegistrazioneDTO dto,
+                                        Model model,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            // Invoca il metodo Service
+            gestioneAccount.elaboraRegistrazione(dto);
+
+            redirectAttributes.addFlashAttribute("messaggio", "Registrazione completata con successo! Ora puoi accedere.");
+            return "redirect:/login";
+
+        } catch (com.zootropolis.exception.ErroreValidazioneException | IllegalArgumentException e) {
+            model.addAttribute("errore", e.getMessage());
+            return "registrazione";
+        }
+    }
+
+    // Alt: annullaRegistrazione()
+    @GetMapping("/utente/registrazione/annulla")
+    public String annullaRegistrazione(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Registrazione annullata.");
+        return "redirect:/login";
+    }
 }
