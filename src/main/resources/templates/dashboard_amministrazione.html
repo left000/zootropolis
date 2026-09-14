@@ -6,16 +6,34 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .admin-box {
-            max-width: 900px;
+            max-width: 950px;
             margin: 2rem auto;
             padding: 0 1rem;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a252f;
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        .grid-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
         .card-panel {
             background: white;
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 4px solid #0d6efd;
         }
         .alert-error {
             background-color: #f8d7da;
@@ -38,48 +56,76 @@
 
 <div class="admin-box">
 
-    <h2>📈 UC-17 Ricevere Report (Amministrazione)</h2>
+    <!-- Header Amministrazione -->
+    <div class="header-bar">
+        <div>
+            <h2 style="margin: 0;">🏢 Area Amministrazione</h2>
+            <p style="margin: 0.3rem 0 0 0; opacity: 0.8; font-size: 0.9rem;">
+                Pannello di controllo direzionale Zootropolis
+            </p>
+        </div>
+        <a th:href="@{/logout}" class="btn btn-secondary" style="background-color: #dc3545; color: white; text-decoration: none;">Logout</a>
+    </div>
 
     <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
     <div th:if="${erroreNessunDato}" class="alert-error" th:text="${erroreNessunDato}"></div>
 
-    <!-- SEQUENZA 1.a: REPORT AUTOMATICO -->
-    <div class="card-panel">
-        <h3>⚙️ Sequenza 1.a: Imposta Ricezione Automatica</h3>
-        <form th:action="@{/amministrazione/report/automatico}" method="post" style="display: flex; gap: 1rem; align-items: center;">
-            <select name="frequenza" class="form-control" style="padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;">
-                <option value="GIORNALIERO">Giornaliero</option>
-                <option value="SETTIMANALE">Settimanale</option>
-                <option value="MENSILE">Mensile</option>
-            </select>
-            <button type="submit" class="btn btn-primary">Salva Frequenza Timer</button>
-        </form>
+    <!-- GRIGLIA FUNZIONALITÀ AMMINISTRAZIONE -->
+    <div class="grid-panels">
+
+        <!-- UC-17: Report Automatici -->
+        <div class="card-panel" style="border-top-color: #0d6efd;">
+            <div>
+                <h3>⚙️ Report Automatico (UC-17)</h3>
+                <p style="color: #6c757d; font-size: 0.9rem;">Imposta la frequenza di invio dei report periodici.</p>
+            </div>
+            <form th:action="@{/amministrazione/report/automatico}" method="post">
+                <select name="frequenza" class="form-control" style="width: 100%; padding: 0.5rem; margin-bottom: 0.8rem; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="GIORNALIERO">Giornaliero</option>
+                    <option value="SETTIMANALE">Settimanale</option>
+                    <option value="MENSILE">Mensile</option>
+                </select>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Salva Frequenza</button>
+            </form>
+        </div>
+
+        <!-- UC-17: Report Manuale -->
+        <div class="card-panel" style="border-top-color: #198754;">
+            <div>
+                <h3>📊 Genera Report (UC-17)</h3>
+                <p style="color: #6c757d; font-size: 0.9rem;">Seleziona un intervallo di date per estrarre i dati delle corse.</p>
+            </div>
+            <form th:action="@{/amministrazione/report/manuale}" method="post">
+                <input type="date" name="dataInizio" class="form-control" style="width: 100%; padding: 0.4rem; margin-bottom: 0.5rem;" required />
+                <input type="date" name="dataFine" class="form-control" style="width: 100%; padding: 0.4rem; margin-bottom: 0.8rem;" required />
+                <button type="submit" class="btn btn-success" style="width: 100%; background-color: #198754; color: white; border: none; padding: 0.5rem; border-radius: 6px;">Genera Report</button>
+            </form>
+        </div>
+
+        <!-- UC-18: Lavori Urbani -->
+        <div class="card-panel" style="border-top-color: #ffc107;">
+            <div>
+                <h3>🚧 Lavori Urbani (UC-18)</h3>
+                <p style="color: #6c757d; font-size: 0.9rem;">Inserisci cantieri urbani per impostare le zone come <strong>VIETATE</strong>.</p>
+            </div>
+            <a th:href="@{/amministrazione/lavori-urbani}" class="btn btn-warning" style="text-decoration: none; color: #212529; text-align: center; display: block; padding: 0.6rem; font-weight: bold;">Gestisci Cantieri</a>
+        </div>
+
+        <!-- UC-19: Inserisci Incentivi -->
+        <div class="card-panel" style="border-top-color: #6f42c1;">
+            <div>
+                <h3>🎁 Incentivi (UC-19)</h3>
+                <p style="color: #6c757d; font-size: 0.9rem;">Crea nuove promozioni con sconti percentuali e date di validità.</p>
+            </div>
+            <a th:href="@{/amministrazione/incentivi}" class="btn btn-primary" style="text-decoration: none; background-color: #6f42c1; text-align: center; display: block; padding: 0.6rem; color: white; font-weight: bold; border-radius: 6px;">Crea Nuovo Incentivo</a>
+        </div>
+
     </div>
 
-    <!-- SEQUENZA PRINCIPALE: REPORT MANUALE -->
-    <div class="card-panel">
-        <h3>📊 Generazione Manuale Report Utilizzo</h3>
-        <form th:action="@{/amministrazione/report/manuale}" method="post" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
-            <div>
-                <label>Data Inizio:</label>
-                <input type="date" name="dataInizio" class="form-control" style="width: 100%; padding: 0.5rem;" required />
-            </div>
-            <div>
-                <label>Data Fine:</label>
-                <input type="date" name="dataFine" class="form-control" style="width: 100%; padding: 0.5rem;" required />
-            </div>
-            <button type="submit" class="btn btn-success" style="background-color: #198754; color: white;">Genera Report</button>
-        </form>
-    </div>
-    <div class="card-panel">
-        <h3>🚧 Lavori Urbani (UC-18)</h3>
-        <p>Inserisci i dati geografici/temporali di nuovi cantieri per contrassegnare automaticamente l'area come <strong>VIETATA</strong>.</p>
-        <a th:href="@{/amministrazione/lavori-urbani}" class="btn btn-warning" style="text-decoration: none; color: #212529;">Inserisci Lavori Urbani</a>
-    </div>
-    <!-- 3. mostraReport(datiFormattati) -->
-    <div th:if="${datiFormattati}" class="card-panel" style="border-left: 5px solid #198754;">
-        <h3 style="color: #198754;">📄 Dati Report Generato</h3>
-        <p style="font-size: 1.1rem; font-weight: bold; background: #f8f9fa; padding: 1rem; border-radius: 6px;" th:text="${datiFormattati}">
+    <!-- BOX ESITO REPORT MANUALE GENERATO -->
+    <div th:if="${datiFormattati}" class="card-panel" style="margin-top: 2rem; border-top-color: #198754;">
+        <h3 style="color: #198754; margin-top: 0;">📄 Esito Report Generato</h3>
+        <p style="font-size: 1.1rem; font-weight: bold; background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 0;" th:text="${datiFormattati}">
             Periodo: ...
         </p>
     </div>

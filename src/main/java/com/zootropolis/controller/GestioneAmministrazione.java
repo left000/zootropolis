@@ -1,12 +1,15 @@
 package com.zootropolis.controller;
 
 import com.zootropolis.dto.AreaDTO;
+import com.zootropolis.dto.PromozioneDTO;
 import com.zootropolis.dto.ReportDTO;
 import com.zootropolis.entity.Area;
 import com.zootropolis.entity.Corsa;
+import com.zootropolis.entity.Promozione;
 import com.zootropolis.entity.Report;
 import com.zootropolis.repository.AreaRepository;
 import com.zootropolis.repository.CorsaRepository;
+import com.zootropolis.repository.PromozioneRepository;
 import com.zootropolis.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +29,13 @@ public class GestioneAmministrazione {
     private final CorsaRepository corsaRepository;
     private final ReportRepository reportRepository;
     private final AreaRepository areaRepository;
+    private final PromozioneRepository promozioneRepository;
 
-    public GestioneAmministrazione(CorsaRepository corsaRepository, ReportRepository reportRepository, AreaRepository areaRepository) {
+    public GestioneAmministrazione(CorsaRepository corsaRepository, ReportRepository reportRepository, AreaRepository areaRepository, PromozioneRepository promozioneRepository) {
         this.corsaRepository = corsaRepository;
         this.reportRepository = reportRepository;
         this.areaRepository = areaRepository;
+        this.promozioneRepository = promozioneRepository;
     }
 
     // ==========================================
@@ -143,6 +148,64 @@ public class GestioneAmministrazione {
             dto.setTipo(area.getTipo());
             dto.setStato(area.getStato());
             dto.setDescrizione(area.getDescrizione());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PromozioneDTO creaIncentivo(PromozioneDTO datiIncentivo) {
+        log.info("Creazione nuovo incentivo promozionale: {}", datiIncentivo != null ? datiIncentivo.getDescrizione() : "null");
+
+        // Self-Message: validaParametri(datiIncentivo)
+        validaParametri(datiIncentivo);
+
+        // Message: create(datiIncentivo) -> Return: nuovaPromozione
+        Promozione nuovaPromozione = new Promozione();
+        nuovaPromozione.setDescrizione(datiIncentivo.getDescrizione());
+        nuovaPromozione.setSconto(datiIncentivo.getSconto());
+        nuovaPromozione.setDataInizio(datiIncentivo.getDataInizio());
+        nuovaPromozione.setDataFine(datiIncentivo.getDataFine());
+
+        // Message: setStato("ATTIVA") -> Return: promozioneRegistrata
+        Promozione salvata = promozioneRepository.save(nuovaPromozione);
+        log.info("Promozione salvata con successo con ID: {}", salvata.getId());
+
+        // Return: salvataggioCompletato (mappato su DTO)
+        PromozioneDTO resultDto = new PromozioneDTO();
+        resultDto.setId(salvata.getId());
+        resultDto.setDescrizione(salvata.getDescrizione());
+        resultDto.setSconto(salvata.getSconto());
+        resultDto.setDataInizio(salvata.getDataInizio());
+        resultDto.setDataFine(salvata.getDataFine());
+
+        return resultDto;
+    }
+
+    // Self-Message: validaParametri(datiIncentivo)
+    private void validaParametri(PromozioneDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Parametri non validi o incongruenti");
+        }
+        if (dto.getDescrizione() == null || dto.getDescrizione().isBlank()) {
+            throw new IllegalArgumentException("Parametri non validi o incongruenti");
+        }
+        if (dto.getSconto() == null || dto.getSconto() <= 0 || dto.getSconto() > 100) {
+            throw new IllegalArgumentException("Parametri non validi o incongruenti");
+        }
+        if (dto.getDataInizio() == null || dto.getDataFine() == null || dto.getDataFine().isBefore(dto.getDataInizio())) {
+            throw new IllegalArgumentException("Parametri non validi o incongruenti");
+        }
+    }
+
+    // Metodo helper per recuperare tutti gli incentivi attivi
+    public List<PromozioneDTO> recuperaTuttiGliIncentivi() {
+        return promozioneRepository.findAll().stream().map(p -> {
+            PromozioneDTO dto = new PromozioneDTO();
+            dto.setId(p.getId());
+            dto.setDescrizione(p.getDescrizione());
+            dto.setSconto(p.getSconto());
+            dto.setDataInizio(p.getDataInizio());
+            dto.setDataFine(p.getDataFine());
             return dto;
         }).collect(Collectors.toList());
     }

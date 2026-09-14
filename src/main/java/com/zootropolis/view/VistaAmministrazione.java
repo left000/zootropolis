@@ -3,6 +3,7 @@ package com.zootropolis.view;
 import com.zootropolis.controller.GestioneAmministrazione;
 import com.zootropolis.dto.AccountDTO;
 import com.zootropolis.dto.AreaDTO;
+import com.zootropolis.dto.PromozioneDTO;
 import com.zootropolis.dto.ReportDTO;
 import com.zootropolis.entity.Amministrazione;
 import jakarta.servlet.http.HttpSession;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/amministrazione")
@@ -181,6 +183,67 @@ public class VistaAmministrazione {
 //        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
 //        return "redirect:/amministrazione/dashboard";
 //    }
+// ==========================================
+    // UC-19 INSERIRE INCENTIVI
+    // ==========================================
 
+    // 1. richiedeCreazioneIncentivo() -> 2. richiediParametriIncentivo()
+    @GetMapping("/incentivi")
+    public String mostraFormIncentivi(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        if (!isAmministrazione(session)) {
+            redirectAttributes.addFlashAttribute("errore", "Accesso negato.");
+            return "redirect:/login";
+        }
+
+        model.addAttribute("listaIncentivi", gestioneAmministrazione.recuperaTuttiGliIncentivi());
+        return "inserisci_incentivo";
+    }
+
+    // 3. fornisciParametri(datiIncentivo)
+    @PostMapping("/incentivi")
+    public String inserisciIncentivo(
+            @RequestParam("descrizione") String descrizione,
+            @RequestParam("sconto") Float sconto,
+            @RequestParam("dataInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInizio,
+            @RequestParam("dataFine") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFine,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (!isAmministrazione(session)) {
+            redirectAttributes.addFlashAttribute("errore", "Accesso negato.");
+            return "redirect:/login";
+        }
+
+        PromozioneDTO dto = new PromozioneDTO();
+        dto.setDescrizione(descrizione);
+        dto.setSconto(sconto);
+        dto.setDataInizio(dataInizio);
+        dto.setDataFine(dataFine);
+
+        try {
+            // creaIncentivo(datiIncentivo) -> 6. confermaSalvataggioIncentivo()
+            PromozioneDTO incentivoCreato = gestioneAmministrazione.creaIncentivo(dto);
+            redirectAttributes.addFlashAttribute("messaggio", "Incentivo promozionale '" + incentivoCreato.getDescrizione() + "' salvato e impostato su ATTIVA.");
+            return "redirect:/amministrazione/incentivi";
+
+        } catch (IllegalArgumentException e) {
+            // Sequenza 4.a: 4.a.2 informaErrore("Parametri non validi o incongruenti") -> 4.a.3 richiediModificaOAnnulla()
+            model.addAttribute("erroreValidazione", e.getMessage());
+            model.addAttribute("descrizioneInserita", descrizione);
+            model.addAttribute("scontoInserito", sconto);
+            model.addAttribute("dataInizioInserita", dataInizio);
+            model.addAttribute("dataFineInserita", dataFine);
+            model.addAttribute("listaIncentivi", gestioneAmministrazione.recuperaTuttiGliIncentivi());
+            return "inserisci_incentivo";
+        }
+    }
+
+    // Sceglie di annullare: annullaOperazione() -> operazioneAnnullata()
+    @GetMapping("/incentivi/annulla")
+    public String annullaInserimentoIncentivo(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
+        return "redirect:/amministrazione/dashboard";
+    }
 
 }
