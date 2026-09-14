@@ -209,4 +209,62 @@ public class GestioneAmministrazione {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    // ==========================================
+    // UC-20 INSERIRE AREE VIETATE
+    // ==========================================
+
+    // Message: creaZonaVietata(coordinate)
+    @Transactional
+    public AreaDTO creaZonaVietata(String coordinate, String nomeArea) {
+        log.info("Creazione nuova area vietata. Nome: {}, Coordinate: {}", nomeArea, coordinate);
+
+        // Self-Message: validaCoordinate(coordinate)
+        validaCoordinate(coordinate);
+
+        // Message: create(coordinate) -> Return: nuovaArea
+        Area nuovaArea = new Area();
+        nuovaArea.setNome(nomeArea != null && !nomeArea.isBlank() ? nomeArea : "Zona Vietata");
+        nuovaArea.setTipo("ZONA_VIETATA");
+        nuovaArea.setDescrizione("Coordinate delimitate: " + coordinate);
+
+        // Message: setStatoArea("VIETATA") -> Return: areaRegistrata
+        nuovaArea.setStato("VIETATA");
+
+        Area areaSalvata = areaRepository.save(nuovaArea);
+        log.info("Area vietata salvata con successo. ID: {}", areaSalvata.getId());
+
+        // Return: salvataggioCompletato (mappato su DTO)
+        AreaDTO dto = new AreaDTO();
+        dto.setId(areaSalvata.getId());
+        dto.setNome(areaSalvata.getNome());
+        dto.setTipo(areaSalvata.getTipo());
+        dto.setStato(areaSalvata.getStato());
+        dto.setDescrizione(areaSalvata.getDescrizione());
+
+        return dto;
+    }
+
+    // Self-Message: validaCoordinate(coordinate)
+    private void validaCoordinate(String coordinate) {
+        if (coordinate == null || coordinate.isBlank()) {
+            // Sequenza 4.a: erroreValidazione
+            throw new IllegalArgumentException("Dati geografici non validi");
+        }
+    }
+
+    // Metodo helper per recuperare le sole aree vietate
+    public List<AreaDTO> recuperaAreeVietate() {
+        return areaRepository.findAll().stream()
+                .filter(a -> "VIETATA".equalsIgnoreCase(a.getStato()))
+                .map(area -> {
+                    AreaDTO dto = new AreaDTO();
+                    dto.setId(area.getId());
+                    dto.setNome(area.getNome());
+                    dto.setTipo(area.getTipo());
+                    dto.setStato(area.getStato());
+                    dto.setDescrizione(area.getDescrizione());
+                    return dto;
+                }).collect(Collectors.toList());
+    }
 }

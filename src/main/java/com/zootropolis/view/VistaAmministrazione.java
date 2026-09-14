@@ -246,4 +246,57 @@ public class VistaAmministrazione {
         return "redirect:/amministrazione/dashboard";
     }
 
+
+    // ==========================================
+    // UC-20 INSERIRE AREE VIETATE
+    // ==========================================
+
+    // 1. richiedeConfigurazioneZonaVietata() -> 2. richiediDatiGeografici()
+    @GetMapping("/aree-vietate")
+    public String mostraFormAreeVietate(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        if (!isAmministrazione(session)) {
+            redirectAttributes.addFlashAttribute("errore", "Accesso negato.");
+            return "redirect:/login";
+        }
+
+        model.addAttribute("listaAreeVietate", gestioneAmministrazione.recuperaAreeVietate());
+        return "inserisci_area_vietata";
+    }
+
+    // 3. fornisciDatiGeografici(coordinate)
+    @PostMapping("/aree-vietate")
+    public String inserisciAreaVietata(
+            @RequestParam("coordinate") String coordinate,
+            @RequestParam(value = "nomeArea", required = false) String nomeArea,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (!isAmministrazione(session)) {
+            redirectAttributes.addFlashAttribute("errore", "Accesso negato.");
+            return "redirect:/login";
+        }
+
+        try {
+            // creaZonaVietata(coordinate) -> 6. confermaSalvataggioZona()
+            AreaDTO areaInserita = gestioneAmministrazione.creaZonaVietata(coordinate, nomeArea);
+            redirectAttributes.addFlashAttribute("messaggio", "Salvataggio completato: Area '" + areaInserita.getNome() + "' configurata come " + areaInserita.getStato() + ".");
+            return "redirect:/amministrazione/aree-vietate";
+
+        } catch (IllegalArgumentException e) {
+            // Sequenza 4.a: 4.a.2 informaErrore("Dati geografici non validi") -> 4.a.3 richiediModificaOAnnulla()
+            model.addAttribute("erroreValidazione", e.getMessage());
+            model.addAttribute("coordinateInserite", coordinate);
+            model.addAttribute("nomeAreaInserito", nomeArea);
+            model.addAttribute("listaAreeVietate", gestioneAmministrazione.recuperaAreeVietate());
+            return "inserisci_area_vietata";
+        }
+    }
+
+    // Sceglie di annullare: annullaOperazione() -> operazioneAnnullata()
+    @GetMapping("/aree-vietate/annulla")
+    public String annullaInserimentoAreaVietata(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
+        return "redirect:/amministrazione/dashboard";
+    }
 }
