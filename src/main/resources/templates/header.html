@@ -2,16 +2,31 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<header th:fragment="appHeader" style="background-color: #ffffff; border-bottom: 2px solid #e9ecef; padding: 0.8rem 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
-    <!-- LOGO DINAMICO POLIMORFICO IN BASE AL RUOLO -->
-    <a th:href="${session.accountLoggato != null} ?
-           (${session.accountLoggato.class.simpleName == 'Amministrazione'} ? @{/amministrazione/dashboard} :
-           (${session.accountLoggato.class.simpleName == 'Operatore'} ? @{/operatore/dashboard} : @{/utente/dashboard}))
-           : @{/login}"
-       class="brand-logo"
-       style="text-decoration: none; color: white; font-weight: bold; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-        🦁 <span>Zootropolis</span>
-    </a>
+<!-- HEADER GLOBALE APPLICAZIONE -->
+<header th:fragment="appHeader" style="background-color: #f8f9fa; border-bottom: 1px solid #e9ecef; padding: 0.8rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+
+        <!-- PARTE SINISTRA: LOGO + NOME ZOOTROPOLIS -->
+        <a th:href="${session.accountLoggato != null} ?
+                   (${session.accountLoggato.class.simpleName == 'Amministrazione'} ? @{/amministrazione/dashboard} :
+                   (${session.accountLoggato.class.simpleName == 'Operatore'} ? @{/operatore/dashboard} : @{/utente/dashboard}))
+                   : @{/login}"
+           style="text-decoration: none; font-weight: bold; font-size: 1.4rem; display: flex; align-items: center; gap: 0.6rem;">
+            <span>🦁</span>
+            <span style="color: #2c3e50; letter-spacing: 0.5px; font-weight: 800;">Zootropolis</span>
+        </a>
+
+        <!-- PARTE DESTRA: PULSANTE LOGOUT -->
+        <div th:if="${session.accountLoggato != null}" style="display: flex; align-items: center; gap: 1rem;">
+            <a th:href="@{/logout}"
+               style="background-color: #dc3545; color: white; padding: 0.45rem 1rem; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;"
+               onmouseover="this.style.backgroundColor='#bb2d3b'"
+               onmouseout="this.style.backgroundColor='#dc3545'">
+                Logout
+            </a>
+        </div>
+
+    </div>
 </header>
 
 </body>

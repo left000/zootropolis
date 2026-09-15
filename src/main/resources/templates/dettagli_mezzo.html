@@ -7,7 +7,7 @@
     <style>
         .details-container {
             max-width: 600px;
-            margin: 2rem auto;
+            margin: 2.5rem auto;
             background: white;
             padding: 2rem;
             border-radius: 12px;
@@ -16,84 +16,106 @@
         .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #eee;
+            align-items: center;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
         }
         .btn-danger-sm {
             background-color: #dc3545;
             color: white;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
             border-radius: 6px;
             text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
         }
-        .btn-back {
-            background-color: #6c757d;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: background-color 0.2s;
+        .btn-danger-sm:hover {
+            background-color: #bb2d3b;
         }
-        .btn-back:hover {
-            background-color: #5a6268;
+        .badge-battery {
+            background-color: #e6f4ea;
+            color: #137333;
+            font-weight: bold;
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body style="display: block;">
+<!-- Header globale dell'applicazione -->
 <div th:replace="~{header :: appHeader}"></div>
 
 <div class="details-container">
 
-    <!-- SCENARIO ERRORE: Veicolo non disponibile -->
-    <div th:if="${erroreNonDisponibile}" style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-        <h4 style="margin: 0 0 0.5rem 0;">⚠️ Veicolo non disponibile</h4>
-        <p th:text="${erroreNonDisponibile}">Il veicolo selezionato non è al momento disponibile per la prenotazione.</p>
+    <!-- SEQUENZA ALTERNATIVA 2.a: Veicolo non disponibile -->
+    <div th:if="${erroreNonDisponibile}" style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1.5rem; border-radius: 8px;">
+        <!-- 2.a.2: mostraErrore("Veicolo non più disponibile") -->
+        <h3 style="margin: 0 0 0.5rem 0; color: #721c24; font-size: 1.25rem;">⚠️ Veicolo non disponibile</h3>
+        <p style="margin: 0; font-size: 0.95rem;" th:text="${erroreNonDisponibile}">Veicolo non più disponibile</p>
 
-        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-primary" style="font-size: 0.9rem;">Scegli un altro mezzo</a>
-            <a th:href="@{/utente/mezzi/dettagli/annulla}" class="btn-danger-sm">Annulla</a>
+        <!-- 2.a.2: chiediNuovaSelezioneOAnnulla() -->
+        <p style="font-size: 0.85rem; margin-top: 0.8rem; color: #495057;">
+            Vuoi scegliere un altro mezzo oppure annullare l'operazione?
+        </p>
+
+        <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
+            <!-- Nuova selezione veicolo -->
+            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-primary" style="font-size: 0.9rem; text-decoration: none; padding: 0.5rem 1rem;">
+                🔍 Scegli un altro mezzo
+            </a>
+            <!-- annullaOperazione() -->
+            <a th:href="@{/utente/mezzi/dettagli/annulla}" class="btn-danger-sm">
+                ✖ Annulla
+            </a>
         </div>
     </div>
 
-    <!-- SEQUENZA PRINCIPALE: Dettagli del mezzo -->
+    <!-- SEQUENZA PRINCIPALE: mostraDettagli(datiMezzo) -->
     <div th:if="${mezzo != null}">
+        <h2 style="margin-top: 0; margin-bottom: 1.5rem; color: #2c3e50; font-size: 1.4rem;">
+            🛴 Dettagli Veicolo <span th:text="'#' + ${mezzo.id}">#1</span>
+        </h2>
+
         <div class="info-row">
-            <strong>Codice Identificativo:</strong>
-            <span th:text="'#MEZZO-' + ${mezzo.id}">#MEZZO-1</span>
-        </div>
-        <div class="info-row">
-            <strong>Tipologia:</strong>
-            <span th:text="${mezzo.tipo}">Monopattino</span>
-        </div>
-        <div class="info-row">
-            <strong>Stato Batteria:</strong>
-            <span th:text="${mezzo.percentualeBatteria} + '% 🔋'" style="font-weight: bold; color: #2e7d32;">85% 🔋</span>
-        </div>
-        <div class="info-row">
-            <strong>Posizione Attuale:</strong>
-            <span th:text="${mezzo.posizione}">Via Roma 10, Zootropolis</span>
+            <strong style="color: #495057;">Codice Identificativo:</strong>
+            <span style="font-weight: bold; color: #2c3e50;" th:text="'MEZZO-' + ${mezzo.id}">MEZZO-1</span>
         </div>
 
-        <!-- AZIONI RAPIDE AGGIORNATE (Mappa, UC-07 Calcola Percorso e UC-05 Prenota Mezzo) -->
+        <div class="info-row">
+            <strong style="color: #495057;">Tipologia:</strong>
+            <span style="text-transform: capitalize; font-weight: 500;" th:text="${mezzo.tipo}">Monopattino</span>
+        </div>
+
+        <div class="info-row">
+            <strong style="color: #495057;">Stato Batteria:</strong>
+            <span class="badge-battery" th:text="${mezzo.percentualeBatteria != null ? mezzo.percentualeBatteria + '% 🔋' : '100% 🔋'}">85% 🔋</span>
+        </div>
+
+        <div class="info-row">
+            <strong style="color: #495057;">Posizione Attuale:</strong>
+            <span style="color: #6c757d;" th:text="${mezzo.posizione}">Via Roma 10, Zootropolis</span>
+        </div>
+
+        <!-- AZIONI RAPIDE: Mappa, UC-07 Calcola Percorso e UC-05 Prenota Mezzo -->
         <div style="margin-top: 2rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
 
-            <!-- Torna alla Mappa -->
-            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none;">
+            <!-- Ritorno alla Mappa -->
+            <a th:href="@{/utente/mezzi/cerca}" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none; background-color: #6c757d; color: white; padding: 0.6rem; border-radius: 6px; font-weight: bold;">
                 ⬅️ Mappa
             </a>
 
-            <!-- Avvia UC-07: Calcolare Percorso (passando idMezzo per leggere getPosizione()) -->
-            <a th:href="@{/utente/percorso/avvia(idMezzo=${mezzo.id})}" class="btn btn-secondary" style="flex: 1.5; text-align: center; text-decoration: none;">
+            <!-- Avvia UC-07: Calcolare Percorso -->
+            <a th:href="@{/utente/percorso/avvia(idMezzo=${mezzo.id})}" class="btn btn-secondary" style="flex: 1.5; text-align: center; text-decoration: none; background-color: #6f42c1; color: white; padding: 0.6rem; border-radius: 6px; font-weight: bold;">
                 🗺️ Calcola Percorso
             </a>
 
-            <!-- Avvia UC-05: Prenotare mezzo -->
-            <a th:href="@{/utente/mezzi/prenota/{id}(id=${mezzo.id})}" class="btn btn-primary" style="flex: 1.5; text-align: center; text-decoration: none;">
+            <!-- Avvia UC-05: Prenotare Mezzo -->
+            <a th:href="@{/utente/mezzi/prenota/{id}(id=${mezzo.id})}" class="btn btn-primary" style="flex: 1.5; text-align: center; text-decoration: none; padding: 0.6rem; border-radius: 6px; font-weight: bold;">
                 📌 Prenota
             </a>
 

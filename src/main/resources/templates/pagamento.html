@@ -5,7 +5,7 @@
     <title>Pagamento Corsa - Zootropolis</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
-        .pay-container {
+        .payment-card {
             max-width: 500px;
             margin: 3rem auto;
             background: white;
@@ -13,12 +13,13 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
-        .price-badge {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #198754;
-            margin: 1rem 0;
+        .amount-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #0d6efd;
+            padding: 1.2rem;
+            border-radius: 8px;
             text-align: center;
+            margin: 1.5rem 0;
         }
         .alert-error {
             background-color: #f8d7da;
@@ -31,53 +32,55 @@
         .btn-danger-sm {
             background-color: #dc3545;
             color: white;
-            padding: 0.3rem 0.8rem;
+            padding: 0.35rem 0.8rem;
             font-size: 0.85rem;
             border-radius: 6px;
             text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
 <body style="display: block;">
 <div th:replace="~{header :: appHeader}"></div>
 
-<div class="pay-container">
+<div class="payment-card">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h2>💳 Pagamento Corsa</h2>
-        <!-- 4.a.1 annullaOperazione() -->
-        <a th:href="@{/utente/corse/paga/annulla}" class="btn-danger-sm">Annulla</a>
+        <h2 style="margin: 0; color: #2c3e50;">💳 Pagamento Corsa</h2>
+        <!-- 4.a.1 / 7.a.3 annullaOperazione() -->
+        <a th:href="@{/utente/corse/paga/annulla}" class="btn-danger-sm">✖ Annulla</a>
     </div>
 
-    <!-- SEQUENZA 7.a: ERRORE TRANSAZIONE -->
+    <!-- SEQUENZA 7.a: TRANSAZIONE RIFIUTATA -->
     <div th:if="${erroreTransazione}" class="alert-error">
-        <strong>⚠️ Transazione Rifiutata:</strong> <span th:text="${erroreTransazione}">Impossibile elaborare il pagamento</span>
-        <p style="font-size: 0.85rem; margin-top: 0.3rem;">7.a.3 Scegli un nuovo metodo di pagamento o annulla.</p>
+        <strong>⚠️ 7.a.2:</strong> <span th:text="${erroreTransazione}">Impossibile elaborare il pagamento</span>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 0;">7.a.3 Inserisci un nuovo metodo di pagamento o annulla l'operazione.</p>
     </div>
-
-    <p style="color: #6c757d; text-align: center;">Riepilogo importo calcolato per la corsa #<span th:text="${idCorsa}">1</span>:</p>
 
     <!-- 3. mostraImportoTotale(importoTotale) -->
-    <div class="price-badge">
-        € <span th:text="${#numbers.formatDecimal(importoTotale, 1, 2)}">3.50</span>
+    <div class="amount-box">
+        <span style="font-size: 0.9rem; color: #6c757d; font-weight: bold;">IMPORTO TOTALE DA PAGARE:</span>
+        <div style="font-size: 2.2rem; font-weight: bold; color: #0d6efd; margin-top: 0.3rem;">
+            € <span th:text="${#numbers.formatDecimal(importoTotale, 1, 'COMMA', 2, 'POINT')}">1.50</span>
+        </div>
     </div>
 
     <!-- 5. confermaMetodoPagamento(metodo) -->
-    <form th:action="@{/utente/corse/paga/conferma}" method="post" style="margin-top: 1.5rem;">
+    <form th:action="@{/utente/corse/paga/conferma}" method="post">
         <input type="hidden" name="idCorsa" th:value="${idCorsa}" />
         <input type="hidden" name="importoTotale" th:value="${importoTotale}" />
 
-        <div style="margin-bottom: 1.2rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Seleziona Metodo di Pagamento:</label>
-            <select name="metodo" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ced4da;" required>
-                <option value="Carta di Credito (**** 4242)">💳 Carta di Credito (**** 4242)</option>
-                <option value="PayPal">🅿️ PayPal</option>
-                <option value="Apple Pay / Google Pay">📱 Apple Pay / Google Pay</option>
-                <option value="rifiutata">⚠️ Simula Carta Rifiutata (Test Errore 7.a)</option>
+        <div style="margin-bottom: 1.5rem; text-align: left;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Scegli Metodo di Pagamento:</label>
+            <select name="metodo" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.95rem;" required>
+                <option value="CARTA_CREDITO">💳 Carta di Credito / Debito</option>
+                <option value="PAYPAL">🅿️ PayPal</option>
+                <option value="WALLETS">📱 Apple / Google Pay</option>
+                <option value="RIFIUTATA">⚠️ Test Carta Rifiutata (Sequenza 7.a)</option>
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #198754; color: white; border: none; border-radius: 6px; cursor: pointer;">
+        <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: bold; padding: 0.7rem; font-size: 1rem;">
             Conferma e Paga
         </button>
     </form>

@@ -27,6 +27,10 @@ public class Mezzo {
     @Column(nullable = false)
     private String posizione;
 
+    // TODO: new attribute
+    private Double latitudine;         // 41.1255 (per la mappa)
+    private Double longitudine;        // 16.8670 (per la mappa)
+
     // Traduzione della chiave esterna verso l'operatore (ON DELETE SET NULL applicato a logica)
     @ManyToOne
     @JoinColumn(name = "id_operatore")

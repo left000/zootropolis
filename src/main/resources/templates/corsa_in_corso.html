@@ -41,21 +41,20 @@
 
     <!-- SEQUENZA 3.a: ERRORE AREA NON CONSENTITA -->
     <div th:if="${erroreAreaNonConsentita}" class="alert-error">
-        <strong>⚠️ Impossibile terminare:</strong> <span th:text="${erroreAreaNonConsentita}">Area di sosta non consentita</span>
-        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Sposta il veicolo in una zona parcheggio autorizzata per concludere il noleggio.</p>
+        <strong>⚠️ 3.a.2:</strong> <span th:text="${erroreAreaNonConsentita}">Impossibile terminare: area di sosta non consentita</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem; margin-bottom: 0;">Sposta il veicolo in una zona parcheggio autorizzata prima di concludere il noleggio.</p>
     </div>
 
     <!-- SEQUENZA 4.a: ERRORE CONNESSIONE HARDWARE -->
     <div th:if="${erroreConnessioneHardware}" class="alert-error">
-        <strong>⚠️ Anomalia Tecnica:</strong> <span th:text="${erroreConnessioneHardware}">Connessione col veicolo fallita</span>
-        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Operazione annullata. Riprova tra qualche istante.</p>
+        <strong>⚠️ 4.a.2:</strong> <span th:text="${erroreConnessioneHardware}">Anomalia tecnica: connessione con il veicolo fallita</span>
+        <p style="font-size: 0.85rem; margin-top: 0.3rem; margin-bottom: 0;">4.a.3 Operazione annullata. Riprova tra qualche istante.</p>
     </div>
 
     <div class="status-badge">🟢 Corsa Iniziata</div>
     <h2>Buon Viaggio!</h2>
-    <p style="color: #6c757d;">Il mezzo è stato sbloccato con successo.</p>
+    <p style="color: #6c757d;">Il mezzo è attualmente sbloccato ed in uso.</p>
 
-    <!-- Dati dal CorsaDTO -->
     <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1.5rem 0; text-align: left;" th:if="${corsa != null}">
         <p style="margin: 0.3rem 0;"><strong>ID Corsa:</strong> #<span th:text="${corsa.id}">1</span></p>
         <p style="margin: 0.3rem 0;"><strong>Ora Inizio:</strong> <span th:text="${#temporals.format(corsa.oraInizio, 'HH:mm:ss')}">10:30:00</span></p>
@@ -63,14 +62,14 @@
     </div>
 
     <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.8rem;" th:if="${corsa != null}">
-        <!-- UC-07: Calcola Percorso durante la corsa -->
+        <!-- UC-07: Calcola Percorso -->
         <a th:href="@{/utente/percorso/avvia(idMezzo=${corsa.idMezzo})}" class="btn btn-secondary" style="text-decoration: none;">
             🗺️ Calcola Percorso
         </a>
 
-        <!-- UC-08: Termina Corsa -->
+        <!-- 1. richiedeTermineCorsa(idCorsa) -->
         <form th:action="@{/utente/corse/termina/{id}(id=${corsa.id})}" method="post">
-            <button type="submit" class="btn btn-danger" style="width: 100%;">🔴 Termina Corsa</button>
+            <button type="submit" class="btn btn-danger" style="width: 100%; font-weight: bold; padding: 0.6rem;">🔴 Termina Corsa</button>
         </form>
     </div>
 

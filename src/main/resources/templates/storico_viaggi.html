@@ -12,68 +12,76 @@
         }
         .history-card {
             background: white;
+            padding: 1.5rem;
             border-radius: 10px;
-            padding: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border-left: 5px solid #198754;
+            border-left: 5px solid #0d6efd;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-        .empty-state {
-            background: #f8f9fa;
-            border: 2px dashed #ced4da;
-            border-radius: 12px;
-            padding: 3rem;
+        .alert-info-box {
+            background-color: #e2e3e5;
+            border: 1px solid #d3d6d8;
+            color: #41464b;
+            padding: 1.5rem;
+            border-radius: 8px;
             text-align: center;
-            color: #6c757d;
         }
-        .btn-back {
-            background-color: #6c757d;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.85rem;
+        .badge-price {
+            background-color: #e8f4f8;
+            color: #0d6efd;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.4rem 0.8rem;
             border-radius: 6px;
-            text-decoration: none;
         }
     </style>
 </head>
 <body style="display: block;">
+<!-- Header globale dell'applicazione -->
 <div th:replace="~{header :: appHeader}"></div>
 
 <div class="history-container">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2>📜 Storico dei Tuoi Viaggi</h2>
-        <a th:href="@{/utente/dashboard}" class="btn-back">⬅️ Dashboard</a>
+        <h2 style="margin: 0; color: #2c3e50;">📜 Storico dei Viaggi</h2>
+        <a th:href="@{/utente/dashboard}" class="btn btn-secondary" style="text-decoration: none; font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+            ⬅️ Torna alla Dashboard
+        </a>
     </div>
 
-    <!-- SEQUENZA 2.a: STORICO DEI VIAGGI VUOTO -->
-    <div th:if="${#lists.isEmpty(storicoCorse)}" class="empty-state">
-        <span style="font-size: 3rem;">🚲</span>
-        <h3>Storico dei viaggi vuoto</h3>
-        <p>Non hai ancora effettuato nessuna corsa con Zootropolis.</p>
-        <a th:href="@{/utente/mezzi/cerca}" class="btn btn-primary" style="margin-top: 1rem; text-decoration: none; display: inline-block;">Cerca un Mezzo</a>
+    <!-- SEQUENZA ALTERNATIVA 2.a: 2.a.2 informa("Storico dei viaggi vuoto") -->
+    <div th:if="${messaggioVuoto}" class="alert-info-box">
+        <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">📭</span>
+        <h3 style="margin: 0 0 0.5rem 0;" th:text="${messaggioVuoto}">Storico dei viaggi vuoto</h3>
+        <p style="margin: 0; font-size: 0.9rem; color: #6c757d;">Non hai ancora effettuato nessuna corsa con i nostri veicoli.</p>
+        <a th:href="@{/utente/mezzi/cerca}" class="btn btn-primary" style="margin-top: 1rem; text-decoration: none; display: inline-block;">
+            🔍 Cerca un mezzo ora
+        </a>
     </div>
 
-    <!-- SEQUENZA PRINCIPALE: MOSTRA STORICO CORSE -->
-    <div th:if="${!#lists.isEmpty(storicoCorse)}">
+    <!-- SEQUENZA PRINCIPALE: 3. mostraStorico(storicoCorse) -->
+    <div th:if="${storicoCorse != null and !#lists.isEmpty(storicoCorse)}">
         <div th:each="c : ${storicoCorse}" class="history-card">
             <div>
-                <h4 style="margin: 0 0 0.4rem 0; color: #2c3e50;">Corsa #<span th:text="${c.id}">1</span> (Mezzo #<span th:text="${c.idMezzo}">2</span>)</h4>
-                <p style="margin: 0.2rem 0; font-size: 0.9rem; color: #6c757d;">
-                    📍 Partenza: <strong th:text="${c.areaAttuale}">Via Roma 10</strong>
+                <h4 style="margin: 0 0 0.4rem 0; color: #2c3e50;">
+                    Corsa #<span th:text="${c.id}">1</span> - Mezzo #<span th:text="${c.idMezzo}">2</span>
+                </h4>
+                <p style="margin: 0.2rem 0; font-size: 0.85rem; color: #6c757d;">
+                    📍 Partenza: <span th:text="${c.areaAttuale != null ? c.areaAttuale : 'N/D'}">Via Roma 10</span>
                 </p>
                 <p style="margin: 0.2rem 0; font-size: 0.85rem; color: #6c757d;">
-                    🗓️ Inizio: <span th:text="${#temporals.format(c.oraInizio, 'dd/MM/yyyy HH:mm')}">10/05/2026 14:30</span> |
-                    Fine: <span th:text="${#temporals.format(c.oraFine, 'HH:mm')}">14:45</span>
+                    🕒 Inizio: <span th:text="${#temporals.format(c.oraInizio, 'dd/MM/yyyy HH:mm')}">15/09/2026 10:30</span>
+                    | Fine: <span th:text="${#temporals.format(c.oraFine, 'HH:mm')}">10:45</span>
                 </p>
             </div>
-            <div style="text-align: right;">
-                <span style="font-size: 1.2rem; font-weight: bold; color: #198754;" th:text="'€ ' + ${c.importo != null ? #numbers.formatDecimal(c.importo, 1, 2) : '1.50'}">€ 3.50</span>
-                <br>
-                <span style="font-size: 0.75rem; background-color: #d1e7dd; color: #0f5132; padding: 0.2rem 0.5rem; border-radius: 12px; font-weight: bold;">Completata</span>
+
+            <div class="badge-price">
+                € <span th:text="${c.importo != null ? #numbers.formatDecimal(c.importo, 1, 'COMMA', 2, 'POINT') : '1.50'}">1.50</span>
             </div>
         </div>
     </div>

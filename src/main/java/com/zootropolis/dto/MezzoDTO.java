@@ -10,5 +10,7 @@ public class MezzoDTO {
     private Boolean stato;
     private String posizione;
     private Long idOperatore;
-    private String descrizioneAnomalia; // Campo dinamico per UC-12
+    private String descrizioneAnomalia;
+    private Double latitudine;
+    private Double longitudine;
 }
