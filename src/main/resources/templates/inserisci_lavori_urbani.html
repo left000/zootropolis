@@ -6,10 +6,10 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .form-container {
-            max-width: 800px;
-            margin: 2rem auto;
+            max-width: 650px;
+            margin: 2.5rem auto;
             background: white;
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
@@ -29,28 +29,14 @@
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
-        .table-lavori {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .table-lavori th, .table-lavori td {
-            padding: 0.75rem;
-            border: 1px solid #dee2e6;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-        .table-lavori th {
-            background-color: #f8f9fa;
-            color: #2c3e50;
-        }
-        .badge-vietata {
+        .btn-danger-sm {
             background-color: #dc3545;
             color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
             font-weight: bold;
-            font-size: 0.75rem;
         }
     </style>
 </head>
@@ -60,75 +46,44 @@
 <div class="form-container">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2>🚧 Inserimento Lavori Urbani (UC-18)</h2>
-        <a th:href="@{/amministrazione/lavori-urbani/annulla}" class="btn btn-secondary" style="background-color: #6c757d; color: white; text-decoration: none;">Annulla</a>
+        <h2 style="margin: 0; color: #2c3e50;">🚧 Lavori Urbani (Cantieri)</h2>
+        <!-- annullaOperazione() -->
+        <a th:href="@{/amministrazione/lavori-urbani/annulla}" class="btn-danger-sm">✖ Annulla</a>
     </div>
 
     <!-- 6. confermaAvvenutoAggiornamento() -->
-    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
+    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}">
+        Aggiornamento completato con successo
+    </div>
 
     <!-- SEQUENZA 4.a: ERRORE VALIDAZIONE -->
     <div th:if="${erroreValidazione}" class="alert-error">
-        <strong>⚠️ 4.a.2 Dati non validi:</strong> <span th:text="${erroreValidazione}">Errore compilazione</span>
-        <p style="font-size: 0.85rem; margin-top: 0.4rem;">4.a.3 Modifica i dati inseriti o clicca su Annulla per interrompere l'operazione.</p>
+        <strong>⚠️ 4.a.2:</strong> <span th:text="${erroreValidazione}">Dati non validi</span>
+        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">4.a.3 Modifica i campi o clicca su Annulla in alto a destra.</p>
     </div>
 
-    <!-- FORM INSERIMENTO -->
-    <form th:action="@{/amministrazione/lavori-urbani}" method="post" style="margin-bottom: 2.5rem;">
-        <div style="margin-bottom: 1.2rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Nome Area Cantiere:</label>
-            <input type="text" name="nomeArea" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                   placeholder="Es. Cantiere Corso Italia" th:value="${nomeAreaInserito}" />
+    <!-- 2. richiediDatiGeograficiETemporali() / 3. fornisciDatiLavori(coordinate, date) -->
+    <form th:action="@{/amministrazione/lavori-urbani}" method="post">
+
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Nome/Identificativo Cantiere:</label>
+            <input type="text" name="nomeArea" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${nomeAreaInserito}" placeholder="Es. Cantiere Via Sparano" />
         </div>
 
-        <div style="margin-bottom: 1.2rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Coordinate Geografiche (Zona Cantiere):</label>
-            <input type="text" name="coordinate" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                   placeholder="Es. 41.1200, 16.8750" th:value="${coordinateInserite}" />
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Coordinate Geografiche (Delimitazione):</label>
+            <input type="text" name="coordinate" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${coordinateInserite}" placeholder="Es. Lat 41.12, Lon 16.86 - Raggio 200m" required />
         </div>
 
         <div style="margin-bottom: 1.5rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Date Inizio e Fine Lavori:</label>
-            <input type="text" name="date" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                   placeholder="Es. 15/09/2026 - 30/09/2026" th:value="${dateInserite}" />
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Periodo Lavori (Date Inizio/Fine):</label>
+            <input type="text" name="date" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${dateInserite}" placeholder="Es. Dal 20/09/2026 al 30/10/2026" required />
         </div>
 
-        <button type="submit" class="btn btn-warning" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #ffc107; color: #212529; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            🚧 Registra Lavori e Imposta Area VIETATA
+        <button type="submit" class="btn btn-warning" style="width: 100%; font-weight: bold; padding: 0.7rem; font-size: 0.95rem; color: #212529;">
+            Registra Cantiere ed Imposta Area VIETATA
         </button>
     </form>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;" />
-
-    <!-- TABELLA AREE E LAVORI URBANI REGISTRATI -->
-    <h3 style="color: #2c3e50; margin-bottom: 1rem;">Elenco Aree con Lavori Urbani Attivi</h3>
-
-    <div th:if="${#lists.isEmpty(areeRegistrate)}" style="color: #6c757d; font-size: 0.9rem;">
-        Nessuna area di cantiere registrata al momento.
-    </div>
-
-    <table th:if="${!#lists.isEmpty(areeRegistrate)}" class="table-lavori">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome Area</th>
-            <th>Tipo</th>
-            <th>Stato Area</th>
-            <th>Dettagli / Coordinate e Date</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="area : ${areeRegistrate}">
-            <td th:text="${'#' + area.id}">#1</td>
-            <td style="font-weight: bold;" th:text="${area.nome}">Cantiere Corso Italia</td>
-            <td th:text="${area.tipo}">LAVORI_URBANI</td>
-            <td>
-                <span class="badge-vietata" th:text="${area.stato}">VIETATA</span>
-            </td>
-            <td style="color: #555;" th:text="${area.descrizione}">Coordinate: 41.1200, 16.8750 | Periodo: 15/09 - 30/09</td>
-        </tr>
-        </tbody>
-    </table>
 
 </div>
 </body>

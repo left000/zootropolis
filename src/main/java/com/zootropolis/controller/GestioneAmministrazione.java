@@ -45,23 +45,27 @@ public class GestioneAmministrazione {
     // Sequenza 1.a: report automatico
     public boolean configuraReportPeriodico(String frequenza) {
         log.info("Impostazione report automatico con frequenza: {}", frequenza);
+
+        // Self-Message: salvaPreferenzaEAvviaTimer()
         salvaPreferenzaEAvviaTimer(frequenza);
+
+        // Return: configurazioneSalvata
         return true;
     }
 
+    // Self-Message: salvaPreferenzaEAvviaTimer()
     private void salvaPreferenzaEAvviaTimer(String frequenza) {
         log.info("Preferenza salvata e timer avviato per frequenza: {}", frequenza);
     }
 
-    // Sequenza Principale / 2.a: manuale
+    // Sequenza Principale / 2.a: report manuale
     @Transactional
     public ReportDTO generaReport(LocalDate dataInizio, LocalDate dataFine) {
         log.info("Generazione report per periodo: {} - {}", dataInizio, dataFine);
 
+        // Self-Message: recuperaDatiUtilizzo(dataInizio, dataFine)
         LocalDateTime start = dataInizio.atStartOfDay();
         LocalDateTime end = dataFine.atTime(LocalTime.MAX);
-
-        // Self-Message: recuperaDatiUtilizzo(dataInizio, dataFine)
         List<Corsa> corsePeriodo = corsaRepository.findByOraInizioBetween(start, end);
 
         // Sequenza 2.a: eccezioneNessunDato
@@ -69,16 +73,16 @@ public class GestioneAmministrazione {
             throw new IllegalStateException("Nessun dato nel periodo selezionato");
         }
 
-        // Calcolo dati aggregati usando getImporto()
+        // Calcolo dati aggregati
         int totaleCorse = corsePeriodo.size();
         double totaleIncassi = corsePeriodo.stream()
                 .mapToDouble(c -> c.getImporto() != null ? c.getImporto() : 0.0)
                 .sum();
 
-        String datiAggregati = String.format("Periodo: %s / %s | Totale Corse: %d | Incasso Totale: %.2f €",
+        String datiAggregati = String.format("Periodo: %s / %s | Totale Noleggi: %d | Incasso Totale: € %.2f",
                 dataInizio, dataFine, totaleCorse, totaleIncassi);
 
-        // Salvataggio Entity Report
+        // Message: create(datiAggregati) su :Report -> istanzaReport
         Report report = new Report();
         report.setTipo(false); // false = Manuale, true = Automatico
         report.setData(LocalDate.now());
@@ -86,7 +90,7 @@ public class GestioneAmministrazione {
 
         Report reportSalvato = reportRepository.save(report);
 
-        // Mappatura su ReportDTO
+        // Message: getContenuto() su :Report -> datiFormattati (mappato su DTO)
         ReportDTO dto = new ReportDTO();
         dto.setId(reportSalvato.getId());
         dto.setTipo(reportSalvato.getTipo());
@@ -95,7 +99,6 @@ public class GestioneAmministrazione {
 
         return dto;
     }
-
     // ==========================================
     // UC-18 INSERIRE LAVORI URBANI
     // ==========================================
@@ -106,9 +109,9 @@ public class GestioneAmministrazione {
         log.info("Inserimento lavori urbani per coordinate: {}, date: {}", coordinate, date);
 
         // Self-Message: validaDati(coordinate, date)
-        validaDatiLavori(coordinate, date);
+        validaDati(coordinate, date);
 
-        // Message: create(coordinate, date) -> Return: nuovaArea
+        // Message: create(coordinate, date) su :Area -> Return: nuovaArea
         Area nuovaArea = new Area();
         nuovaArea.setNome(nomeArea != null && !nomeArea.isBlank() ? nomeArea : "Cantiere Lavori Urbani");
         nuovaArea.setTipo("LAVORI_URBANI");
@@ -118,7 +121,6 @@ public class GestioneAmministrazione {
         nuovaArea.setStato("VIETATA");
 
         Area areaSalvata = areaRepository.save(nuovaArea);
-        log.info("Area per lavori urbani registrata con successo. ID: {}", areaSalvata.getId());
 
         // Return: aggiornamentoCompletato (mappato su DTO)
         AreaDTO dto = new AreaDTO();
@@ -132,10 +134,10 @@ public class GestioneAmministrazione {
     }
 
     // Self-Message: validaDati(coordinate, date)
-    private void validaDatiLavori(String coordinate, String date) {
+    private void validaDati(String coordinate, String date) {
         if (coordinate == null || coordinate.isBlank() || date == null || date.isBlank()) {
             // Sequenza 4.a: erroreValidazione
-            throw new IllegalArgumentException("Dati non validi: coordinate e date obbligatorie.");
+            throw new IllegalArgumentException("Dati non validi");
         }
     }
 
@@ -152,6 +154,11 @@ public class GestioneAmministrazione {
         }).collect(Collectors.toList());
     }
 
+    // ==========================================
+    // UC-19 INSERIRE INCENTIVI
+    // ==========================================
+
+    // Message: creaIncentivo(datiIncentivo)
     @Transactional
     public PromozioneDTO creaIncentivo(PromozioneDTO datiIncentivo) {
         log.info("Creazione nuovo incentivo promozionale: {}", datiIncentivo != null ? datiIncentivo.getDescrizione() : "null");
@@ -159,7 +166,7 @@ public class GestioneAmministrazione {
         // Self-Message: validaParametri(datiIncentivo)
         validaParametri(datiIncentivo);
 
-        // Message: create(datiIncentivo) -> Return: nuovaPromozione
+        // Message: create(datiIncentivo) su :Promozione -> Return: nuovaPromozione
         Promozione nuovaPromozione = new Promozione();
         nuovaPromozione.setDescrizione(datiIncentivo.getDescrizione());
         nuovaPromozione.setSconto(datiIncentivo.getSconto());
@@ -184,6 +191,7 @@ public class GestioneAmministrazione {
     // Self-Message: validaParametri(datiIncentivo)
     private void validaParametri(PromozioneDTO dto) {
         if (dto == null) {
+            // Sequenza 4.a: erroreValidazione
             throw new IllegalArgumentException("Parametri non validi o incongruenti");
         }
         if (dto.getDescrizione() == null || dto.getDescrizione().isBlank()) {
@@ -222,7 +230,7 @@ public class GestioneAmministrazione {
         // Self-Message: validaCoordinate(coordinate)
         validaCoordinate(coordinate);
 
-        // Message: create(coordinate) -> Return: nuovaArea
+        // Message: create(coordinate) su :Area -> Return: nuovaArea
         Area nuovaArea = new Area();
         nuovaArea.setNome(nomeArea != null && !nomeArea.isBlank() ? nomeArea : "Zona Vietata");
         nuovaArea.setTipo("ZONA_VIETATA");

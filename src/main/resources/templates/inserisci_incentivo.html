@@ -2,14 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Inserimento Incentivi - Zootropolis</title>
+    <title>Inserimento Incentivo - Zootropolis</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .form-container {
-            max-width: 800px;
-            margin: 2rem auto;
+            max-width: 650px;
+            margin: 2.5rem auto;
             background: white;
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
@@ -29,28 +29,14 @@
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
-        .table-incentivi {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .table-incentivi th, .table-incentivi td {
-            padding: 0.75rem;
-            border: 1px solid #dee2e6;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-        .table-incentivi th {
-            background-color: #f8f9fa;
-            color: #2c3e50;
-        }
-        .badge-attiva {
-            background-color: #198754;
+        .btn-danger-sm {
+            background-color: #dc3545;
             color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
             font-weight: bold;
-            font-size: 0.75rem;
         }
     </style>
 </head>
@@ -60,87 +46,49 @@
 <div class="form-container">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2>🎁 Inserimento Incentivi (UC-19)</h2>
-        <!-- Sceglie di annullare -->
-        <a th:href="@{/amministrazione/incentivi/annulla}" class="btn btn-secondary" style="background-color: #6c757d; color: white; text-decoration: none;">Annulla</a>
+        <h2 style="margin: 0; color: #2c3e50;">🎁 Nuovo Incentivo Promozionale</h2>
+        <!-- annullaOperazione() -->
+        <a th:href="@{/amministrazione/incentivi/annulla}" class="btn-danger-sm">✖ Annulla</a>
     </div>
 
     <!-- 6. confermaSalvataggioIncentivo() -->
-    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
+    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}">
+        Incentivo salvato con successo
+    </div>
 
     <!-- SEQUENZA 4.a: ERRORE VALIDAZIONE -->
     <div th:if="${erroreValidazione}" class="alert-error">
-        <strong>⚠️ 4.a.2 Errore:</strong> <span th:text="${erroreValidazione}">Parametri non validi o incongruenti</span>
-        <p style="font-size: 0.85rem; margin-top: 0.4rem;">4.a.3 Modifica i parametri dell'incentivo o clicca su Annulla per interrompere l'operazione.</p>
+        <strong>⚠️ 4.a.2:</strong> <span th:text="${erroreValidazione}">Parametri non validi o incongruenti</span>
+        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">4.a.3 Modifica i parametri inseriti o annulla l'operazione.</p>
     </div>
 
     <!-- 2. richiediParametriIncentivo() / 3. fornisciParametri(datiIncentivo) -->
-    <form th:action="@{/amministrazione/incentivi}" method="post" style="margin-bottom: 2.5rem;">
+    <form th:action="@{/amministrazione/incentivi}" method="post">
 
-        <div style="margin-bottom: 1.2rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Descrizione Promozione:</label>
-            <input type="text" name="descrizione" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                   placeholder="Es. Sconto Primavera 20%" th:value="${descrizioneInserita}" required />
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Descrizione Promozione:</label>
+            <input type="text" name="descrizione" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${descrizioneInserita}" placeholder="Es. Sconto Primavera Bari" required />
         </div>
 
-        <div style="margin-bottom: 1.2rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Percentuale Sconto (%):</label>
-            <input type="number" step="0.1" name="sconto" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                   placeholder="Es. 20.0" th:value="${scontoInserito}" required />
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Sconto Percentuale (%):</label>
+            <input type="number" step="0.1" min="1" max="100" name="sconto" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${scontoInserito}" placeholder="Es. 20.0" required />
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-            <div>
-                <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Data Inizio Validità:</label>
-                <input type="datetime-local" name="dataInizio" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                       th:value="${dataInizioInserita}" required />
-            </div>
-            <div>
-                <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Data Fine Validità:</label>
-                <input type="datetime-local" name="dataFine" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"
-                       th:value="${dataFineInserita}" required />
-            </div>
+        <div style="margin-bottom: 1rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Data e Ora Inizio:</label>
+            <input type="datetime-local" name="dataInizio" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${dataInizioInserita}" required />
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            🎁 Salva e Attiva Incentivo Promozionale
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Data e Ora Fine:</label>
+            <input type="datetime-local" name="dataFine" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" th:value="${dataFineInserita}" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: bold; padding: 0.7rem; font-size: 0.95rem; background-color: #6f42c1; border: none; border-radius: 6px; color: white;">
+            Crea ed Attiva Incentivo
         </button>
     </form>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;" />
-
-    <!-- TABELLA INCENTIVI E PROMOZIONI REGISTRATE -->
-    <h3 style="color: #2c3e50; margin-bottom: 1rem;">Elenco Incentivi Promozionali Attivi</h3>
-
-    <div th:if="${#lists.isEmpty(listaIncentivi)}" style="color: #6c757d; font-size: 0.9rem;">
-        Nessun incentivo promozionale registrato al momento.
-    </div>
-
-    <table th:if="${!#lists.isEmpty(listaIncentivi)}" class="table-incentivi">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Descrizione</th>
-            <th>Sconto</th>
-            <th>Stato</th>
-            <th>Periodo Validità</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="p : ${listaIncentivi}">
-            <td th:text="${'#' + p.id}">#1</td>
-            <td style="font-weight: bold;" th:text="${p.descrizione}">Sconto Primavera</td>
-            <td style="color: #198754; font-weight: bold;" th:text="${p.sconto + '%'}">20%</td>
-            <td>
-                <span class="badge-attiva">ATTIVA</span>
-            </td>
-            <td style="color: #555; font-size: 0.85rem;"
-                th:text="${#temporals.format(p.dataInizio, 'dd/MM/yyyy HH:mm') + ' - ' + #temporals.format(p.dataFine, 'dd/MM/yyyy HH:mm')}">
-                15/09/2026 09:00 - 30/09/2026 23:59
-            </td>
-        </tr>
-        </tbody>
-    </table>
 
 </div>
 </body>
