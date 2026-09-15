@@ -2,28 +2,37 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dettagli Allarme - Zootropolis Operatori</title>
+    <title>Dettagli Allarme Spostamento - Zootropolis Operatori</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .alarm-container {
             max-width: 600px;
-            margin: 3rem auto;
+            margin: 2.5rem auto;
             background: white;
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
         .info-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 0.8rem 0;
             border-bottom: 1px solid #eee;
         }
-        .alert-danger-box {
+        .alert-warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-error-box {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
@@ -31,7 +40,7 @@
             background-color: #d1e7dd;
             border: 1px solid #badbcc;
             color: #0f5132;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
@@ -43,50 +52,70 @@
 <div class="alarm-container">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2>🚨 Gestione Spostamento Anomalo</h2>
-        <a th:href="@{/operatore/anomalie}" class="btn btn-secondary" style="font-size: 0.85rem; text-decoration: none;">⬅️ Lista Anomalie</a>
+        <h2 style="margin: 0; color: #2c3e50;">🚨 Dettaglio Allarme</h2>
+        <a th:href="@{/operatore/dashboard}" class="btn btn-secondary" style="text-decoration: none; font-size: 0.85rem;">
+            ⬅️ Dashboard
+        </a>
     </div>
 
     <!-- 1. mostraAvvisoSpostamento() -->
-    <div style="background-color: #fff3cd; color: #856404; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: bold;">
-        ⚠️ <span th:text="${avvisoAnomalia}">Avviso Spostamento</span>
+    <div th:if="${avvisoAnomalia}" class="alert-warning-box">
+        <strong>⚠️ Avviso Sistema:</strong> <span th:text="${avvisoAnomalia}">Rilevato spostamento non autorizzato</span>
     </div>
 
-    <!-- SEQUENZA 3.a: LOCALIZZAZIONE NON DISPONIBILE -->
-    <div th:if="${erroreNonRintracciabile}" class="alert-danger-box">
-        <h4>📡 3.a.2 Dati non recuperabili</h4>
-        <p th:text="${erroreNonRintracciabile}">Mezzo non rintracciabile</p>
+    <!-- SEQUENZA ALTERNATIVA 3.a: LOCALIZZAZIONE NON DISPONIBILE -->
+    <div th:if="${erroreNonRintracciabile}" class="alert-error-box">
+        <h4>📡 3.a.2 Impossibile Rintracciare</h4>
+        <p th:text="${erroreNonRintracciabile}">Dati non recuperabili, mezzo non rintracciabile</p>
+        <div style="margin-top: 1rem;">
+            <a th:href="@{/operatore/mezzi/blocco-remoto}" class="btn btn-danger" style="text-decoration: none; font-size: 0.85rem;">
+                🔒 Tenta Blocco Remoto Forzato
+            </a>
+        </div>
     </div>
 
-    <!-- SEQUENZA 3.b: RIENTRATA IN AREA CONSENTITA -->
+    <!-- SEQUENZA ALTERNATIVA 3.b: ANOMALIA RIENTRATA -->
     <div th:if="${allarmeRisolto}" class="alert-success-box">
-        <h4>✅ 3.b.2 Allarme non più attivo</h4>
-        <p th:text="${allarmeRisolto}">Mezzo in area consentita</p>
+        <h4>✅ 3.b.2 Allarme Rientrato</h4>
+        <p th:text="${allarmeRisolto}">Allarme non più attivo: mezzo in area consentita</p>
     </div>
 
-    <!-- SEQUENZA PRINCIPALE: MOSTRA DETTAGLI MEZZO -->
+    <!-- SEQUENZA PRINCIPALE: 4. mostraDettagliMezzo(dettagliAllarme) -->
     <div th:if="${dettagliAllarme != null}">
-        <h3 style="color: #dc3545; margin-top: 0;">Dettagli Allarme GPS Live</h3>
+        <h3 style="margin-top: 0; color: #dc3545; font-size: 1.2rem; margin-bottom: 1rem;">
+            Dati Veicolo e Stato Allarme
+        </h3>
 
         <div class="info-row">
-            <strong>ID Veicolo:</strong>
+            <strong>ID Mezzo:</strong>
             <span th:text="'#' + ${dettagliAllarme.idMezzo}">#1</span>
         </div>
+
         <div class="info-row">
-            <strong>Tipo Mezzo:</strong>
-            <span th:text="${dettagliAllarme.tipoMezzo}" style="text-transform: capitalize;">Monopattino</span>
+            <strong>Tipologia:</strong>
+            <span th:text="${dettagliAllarme.tipoMezzo}">Monopattino</span>
         </div>
+
         <div class="info-row">
-            <strong>Posizione Attuale GPS:</strong>
-            <span th:text="${dettagliAllarme.posizioneAttuale}" style="font-weight: bold; color: #dc3545;">Via Roma 10</span>
+            <strong>Tipo Allarme:</strong>
+            <span style="color: #dc3545; font-weight: bold;" th:text="${dettagliAllarme.tipoAllarme}">SPOSTAMENTO NON AUTORIZZATO</span>
         </div>
+
         <div class="info-row">
-            <strong>Stato Batteria:</strong>
-            <span th:text="${dettagliAllarme.percentualeBatteria + '%'}">80%</span>
+            <strong>Posizione Attuale:</strong>
+            <span th:text="${dettagliAllarme.posizioneAttuale}">Via Roma 10</span>
         </div>
+
         <div class="info-row">
-            <strong>Tipo Segnalazione:</strong>
-            <span th:text="${dettagliAllarme.tipoAllarme}">Spostamento Non Autorizzato</span>
+            <strong>Livello Batteria:</strong>
+            <span th:text="${dettagliAllarme.percentualeBatteria != null ? dettagliAllarme.percentualeBatteria + '%' : 'N/D'}">80%</span>
+        </div>
+
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <!-- Avvia UC-16: Blocco Remoto -->
+            <a th:href="@{/operatore/mezzi/blocco-remoto}" class="btn btn-danger" style="flex: 1; text-align: center; text-decoration: none; font-weight: bold;">
+                🔒 Procedi al Blocco Remoto (UC-16)
+            </a>
         </div>
     </div>
 

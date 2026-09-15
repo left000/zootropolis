@@ -116,24 +116,30 @@ public class GestioneAccount {
     // Message: elaboraSospensione(idAccount)
     @Transactional
     public boolean elaboraSospensione(Long idAccount) {
-        log.info("Elaborazione sospensione account per ID: {}", idAccount);
+        log.info("Elaborazione sospensione per account ID: {}", idAccount);
 
-        // Message: getDatiAccount() -> Return: statoAccount
+        // Message: getDatiAccount() su :Account
         Account account = accountRepository.findById(idAccount)
                 .orElseThrow(() -> new IllegalArgumentException("Account non trovato")); // Sequenza 4.a: erroreAccountInesistente
 
-        // Self-Message: verificaValidita(statoAccount)
-        if (Boolean.FALSE.equals(account.getStatoAccount())) {
+        // Message: getStato() + Self-Message: verificaValidita(statoAccount)
+        Boolean statoAccount = account.getStatoAccount();
+        if (!verificaValidita(statoAccount)) {
             // Sequenza 4.b: erroreAccountGiaSospeso
             throw new IllegalStateException("Account già sospeso o disattivato");
         }
 
-        // Message: setStatoAccount(false) / disabilita account
-        account.setStatoAutenticazione(false);
+        // Message: setStatoAccount(false) su :Account
+        account.setStatoAccount(false);
         accountRepository.save(account);
 
         // Return: sospensioneCompletata
-        log.info("Account ID {} sospeso con successo", idAccount);
         return true;
+    }
+
+    // Self-Message: verificaValidita(statoAccount)
+    private boolean verificaValidita(Boolean statoAccount) {
+        // L'account è valido per la sospensione se attualmente attivo (true)
+        return Boolean.TRUE.equals(statoAccount);
     }
 }

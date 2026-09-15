@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Bloccare Account - Zootropolis Operatori</title>
+    <title>Sospendi Account - Zootropolis Operatori</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .suspend-container {
-            max-width: 550px;
+            max-width: 500px;
             margin: 3rem auto;
             background: white;
             padding: 2.5rem;
@@ -32,10 +32,11 @@
         .btn-danger-sm {
             background-color: #dc3545;
             color: white;
-            padding: 0.3rem 0.8rem;
+            padding: 0.35rem 0.8rem;
             font-size: 0.85rem;
             border-radius: 6px;
             text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -45,35 +46,36 @@
 <div class="suspend-container">
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2>🚫 Sospensione Account</h2>
+        <h2 style="margin: 0; color: #2c3e50;">🚫 Sospensione Account</h2>
         <!-- annullaOperazione() -->
-        <a th:href="@{/operatore/account/sospendi/annulla}" class="btn-danger-sm">Annulla</a>
+        <a th:href="@{/operatore/account/sospendi/annulla}" class="btn-danger-sm">✖ Annulla</a>
     </div>
 
-    <!-- MESSAGGIO CONFERMA BLOCCO ESEGUITO -->
-    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}"></div>
+    <!-- 6. confermaBloccoEseguito() -->
+    <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}">
+        Blocco eseguito con successo
+    </div>
 
-    <!-- SEQUENZA 4.a: ERRORE ACCOUNT INESISTENTE -->
+    <!-- SEQUENZA 4.a: ACCOUNT INESISTENTE -->
     <div th:if="${erroreAccountInesistente}" class="alert-error">
-        <strong>⚠️ Errore:</strong> <span th:text="${erroreAccountInesistente}">Account non trovato</span>
-        <p style="font-size: 0.85rem; margin-top: 0.3rem;">Inserisci un identificativo valido oppure annulla l'operazione.</p>
+        <strong>⚠️ 4.a.2:</strong> <span th:text="${erroreAccountInesistente}">Account non trovato</span>
+        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">4.a.3 Inserisci un nuovo ID account o annulla l'operazione.</p>
     </div>
 
-    <!-- SEQUENZA 4.b: ERRORE ACCOUNT GIÀ SOSPESO -->
+    <!-- SEQUENZA 4.b: ACCOUNT GIA' SOSPESO -->
     <div th:if="${erroreAccountGiaSospeso}" class="alert-error">
-        <strong>⚠️ Attenzione:</strong> <span th:text="${erroreAccountGiaSospeso}">Account già sospeso o disattivato</span>
-        <p style="font-size: 0.85rem; margin-top: 0.3rem;">L'utente specificato risulta già disabilitato nel sistema.</p>
+        <strong>⚠️ 4.b.2:</strong> <span th:text="${erroreAccountGiaSospeso}">Account già sospeso o disattivato</span>
     </div>
 
     <!-- 2. richiediIdentificativoAccount() / 3. fornisciIdentificativo(idAccount) -->
     <form th:action="@{/operatore/account/sospendi}" method="post">
         <div style="margin-bottom: 1.5rem;">
-            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Identificativo Account (ID Utente):</label>
-            <input type="number" name="idAccount" class="form-control" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;" placeholder="Es. 10" required />
+            <label style="font-weight: bold; display: block; margin-bottom: 0.5rem; color: #495057;">ID Account da Sospendere:</label>
+            <input type="number" name="idAccount" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="Es. 102" required />
         </div>
 
-        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 0.8rem; font-size: 1rem; background-color: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">
-            🔒 Conferma Blocco Account
+        <button type="submit" class="btn btn-danger" style="width: 100%; font-weight: bold; padding: 0.7rem; font-size: 0.95rem;">
+            Sospendi Account
         </button>
     </form>
 

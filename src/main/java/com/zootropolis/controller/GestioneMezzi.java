@@ -522,93 +522,194 @@ public class GestioneMezzi {
         return convertiInDTO(mezzoEntity);
     }
 
-    // UC-11
+    // ==========================================
+    // UC-11 VISUALIZZARE MEZZI
+    // ==========================================
+
+    // 2. richiediDatiMezzi()
     public List<MezzoDTO> richiediDatiMezzi(boolean ignoraLocalizzazioneLive) {
         log.info("Recupero dati mezzi per mappa operatore...");
+
         List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
 
-        if (tuttiIMezzi.isEmpty()) {
-            throw new IllegalStateException("Nessun mezzo da mostrare");
+        // Self-Message: verificaStatoVeicoli()
+        verificaStatoVeicoli(tuttiIMezzi);
+
+        // Simulazione Sequenza 2.a: Localizzazione live non disponibile
+        if (!ignoraLocalizzazioneLive && "OFFLINE".equalsIgnoreCase(this.getPosizioneAttualeUtente())) {
+            // Sequenza 2.a: eccezioneLocalizzazioneAssente
+            throw new IllegalArgumentException("Impossibile mostrare dati in tempo reale");
         }
 
+        // Message: getPosizione() su :Mezzo -> Return: listaDatiMezzi / datiAttualizzati
         return tuttiIMezzi.stream()
                 .map(this::convertiInDTO)
                 .collect(Collectors.toList());
     }
 
+    // Self-Message: verificaStatoVeicoli()
+    private void verificaStatoVeicoli(List<Mezzo> mezzi) {
+        if (mezzi == null || mezzi.isEmpty()) {
+            // Sequenza 2.b: eccezioneNessunVeicolo
+            throw new IllegalStateException("Nessun mezzo da mostrare");
+        }
+    }
+
+    // 2.a.5 richiediUltimiDatiNoti()
     public List<MezzoDTO> richiediUltimiDatiNoti() {
+        log.info("Recupero ultimi dati noti dei mezzi...");
         return richiediDatiMezzi(true);
     }
 
-    // UC-12
+//    // UC-11
+//    public List<MezzoDTO> richiediDatiMezzi(boolean ignoraLocalizzazioneLive) {
+//        log.info("Recupero dati mezzi per mappa operatore...");
+//        List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
+//
+//        if (tuttiIMezzi.isEmpty()) {
+//            throw new IllegalStateException("Nessun mezzo da mostrare");
+//        }
+//
+//        return tuttiIMezzi.stream()
+//                .map(this::convertiInDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<MezzoDTO> richiediUltimiDatiNoti() {
+//        return richiediDatiMezzi(true);
+//    }
+
+    // ==========================================
+    // UC-12 MONITORARE MALFUNZIONAMENTI
+    // ==========================================
+
+    // 2. richiediElencoAnomalie()
     public List<MezzoDTO> richiediElencoAnomalie() {
+        log.info("Recupero mezzi con anomalie o malfunzionamenti...");
+
         List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
+
+        // Self-Message: filtraMezziAnomali()
         List<Mezzo> mezziAnomali = filtraMezziAnomali(tuttiIMezzi);
 
-        if (mezziAnomali.isEmpty()) {
+        if (mezziAnomali == null || mezziAnomali.isEmpty()) {
+            // Sequenza 2.a: listaVuota
             return new ArrayList<>();
         }
 
+        // Message: getDettagliDiagnostici() su :Mezzo -> Return: listaMezziAnomali (via DTO)
         return mezziAnomali.stream().map(mezzo -> {
             MezzoDTO dto = convertiInDTO(mezzo);
-            dto.setDescrizioneAnomalia(ottieniDettagliDiagnostici(mezzo));
+            dto.setDescrizioneAnomalia(getDettagliDiagnostici(mezzo));
             return dto;
         }).collect(Collectors.toList());
     }
 
+    // Self-Message: filtraMezziAnomali()
     private List<Mezzo> filtraMezziAnomali(List<Mezzo> mezzi) {
         return mezzi.stream()
-                .filter(m -> Boolean.FALSE.equals(m.getStato()) || (m.getPercentualeBatteria() != null && m.getPercentualeBatteria() <= 10))
+                .filter(m -> {
+                    // Un mezzo ha un'anomalia se lo stato è false oppure se la batteria è <= 10%
+                    boolean guasto = Boolean.FALSE.equals(m.getStato());
+                    boolean batteriaScarica = m.getPercentualeBatteria() != null && m.getPercentualeBatteria() <= 10;
+                    return guasto || batteriaScarica;
+                })
                 .collect(Collectors.toList());
     }
 
-    private String ottieniDettagliDiagnostici(Mezzo mezzo) {
+    // Message: getDettagliDiagnostici() su :Mezzo
+    private String getDettagliDiagnostici(Mezzo mezzo) {
         if (mezzo.getPercentualeBatteria() != null && mezzo.getPercentualeBatteria() <= 10) {
-            return "Batteria Critica (" + mezzo.getPercentualeBatteria() + "%) - Ricarica richiesta";
+            return "Batteria Critica (" + mezzo.getPercentualeBatteria() + "%) - Ricarica urgente";
         }
-        return "Anomalia Hardware/Blocco Sensori - Intervento manutenzione necessario";
+        return "Anomalia Hardware/Blocco Sensori - Intervento di manutenzione necessario";
     }
 
-    // UC-13
+// ==========================================
+    // UC-13 REDISTRIBUIRE
+    // ==========================================
+
+    // 2. analizzaDistribuzioneMezzi()
     public List<AreaSquilibrataDTO> analizzaDistribuzioneMezzi() {
+        log.info("Analisi distribuzione mezzi per rilevamento squilibri...");
+
+        // Simulazione Message getDatiArea() su :Area -> capacitaZone
+        // Simulazione Message getPosizione() su :Mezzo -> posizioniAttuali
         List<Mezzo> tuttiIMezzi = mezzoRepository.findAll();
-        return calcolaCarenzeEdEccedenze(tuttiIMezzi);
+
+        // Self-Message: calcolaCarenzeEdEccedenze()
+        List<AreaSquilibrataDTO> areeSquilibrate = calcolaCarenzeEdEccedenze(tuttiIMezzi);
+
+        if (areeSquilibrate == null || areeSquilibrate.isEmpty()) {
+            // Sequenza 2.a: distribuzioneOttimale (lista vuota)
+            return new ArrayList<>();
+        }
+
+        // Return: listaAreeSquilibrate
+        return areeSquilibrate;
     }
 
+    // Self-Message: calcolaCarenzeEdEccedenze()
     private List<AreaSquilibrataDTO> calcolaCarenzeEdEccedenze(List<Mezzo> mezzi) {
         List<AreaSquilibrataDTO> risultati = new ArrayList<>();
-        long contatoreCentro = mezzi.stream().filter(m -> m.getPosizione() != null && m.getPosizione().toLowerCase().contains("roma")).count();
-        long contatoreStazione = mezzi.stream().filter(m -> m.getPosizione() != null && m.getPosizione().toLowerCase().contains("stazione")).count();
 
+        // Mappatura/Conteggio delle posizioni attuali dei mezzi rispetto alla capacità dell'Area
+        long contatoreCentro = mezzi.stream()
+                .filter(m -> m.getPosizione() != null && m.getPosizione().toLowerCase().contains("roma"))
+                .count();
+        long contatoreStazione = mezzi.stream()
+                .filter(m -> m.getPosizione() != null && m.getPosizione().toLowerCase().contains("stazione"))
+                .count();
+
+        // Area Centro (Capacità target: 5) -> Eccedenza se > 5
         if (contatoreCentro > 5) {
             risultati.add(new AreaSquilibrataDTO("Zona Centro - Via Roma", (int) contatoreCentro, 5, "ECCEDENZA", (int) contatoreCentro - 5));
         }
+
+        // Area Stazione (Capacità target: 8) -> Carenza se < 2
         if (contatoreStazione < 2) {
             risultati.add(new AreaSquilibrataDTO("Zona Stazione Centrale", (int) contatoreStazione, 8, "CARENZA", 2 - (int) contatoreStazione));
         }
+
         return risultati;
     }
 
-    // UC-16
+    // ==========================================
+    // UC-16 BLOCCARE DA REMOTO
+    // ==========================================
+
+    // Message: elaboraBlocco(idMezzo)
     @Transactional
     public boolean elaboraBlocco(Long idMezzo) {
-        Mezzo mezzo = mezzoRepository.findById(idMezzo)
-                .orElseThrow(() -> new IllegalArgumentException("Mezzo non trovato"));
+        log.info("Elaborazione blocco remoto per mezzo ID: {}", idMezzo);
 
+        // Message: getDatiMezzo() su :Mezzo & Self-message: verificaEsistenza(idMezzo)
+        Mezzo mezzo = mezzoRepository.findById(idMezzo)
+                .orElseThrow(() -> new IllegalArgumentException("Mezzo non trovato")); // Sequenza 4.a: erroreMezzoInesistente
+
+        // Self-Message: inviaComandoBloccoFisico()
         boolean bloccoRiuscito = inviaComandoBloccoFisico(idMezzo);
         if (!bloccoRiuscito) {
+            // Sequenza 5.a: erroreConnessioneHardware
             throw new IllegalStateException("Mancata connessione con il veicolo");
         }
 
+        // Message: setStatoMezzo("BLOCCATO") -> setStato(false) (mezzo bloccato / fuori servizio)
         mezzo.setStato(false);
         mezzoRepository.save(mezzo);
+
+        // Return: bloccoCompletato
         return true;
     }
 
+    // Self-Message: inviaComandoBloccoFisico()
     private boolean inviaComandoBloccoFisico(Long idMezzo) {
+        // Simula la mancata connessione hardware (Sequenza 5.a) se l'ID è 999
         if (idMezzo != null && idMezzo == 999L) {
+            log.warn("Errore di connessione hardware con la centralina del mezzo ID: {}", idMezzo);
             return false;
         }
+        log.info("Comando di blocco fisico inviato con successo al mezzo ID: {}", idMezzo);
         return true;
     }
 }
