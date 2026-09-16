@@ -1,3 +1,36 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Login - Zootropolis</title>-->
+<!--  <link rel="stylesheet" th:href="@{/css/style.css}" />-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="card">-->
+<!--  <h2>Accedi a Zootropolis</h2>-->
+
+<!--  <div th:if="${errore}" class="alert alert-danger" th:text="${errore}"></div>-->
+<!--  <div th:if="${messaggio}" class="alert alert-success" th:text="${messaggio}"></div>-->
+
+<!--  <form th:action="@{/login}" method="post">-->
+<!--    <div class="form-group">-->
+<!--      <label>Email</label>-->
+<!--      <input type="email" name="email" placeholder="nome@esempio.com" required />-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label>Password</label>-->
+<!--      <input type="password" name="password" placeholder="••••••••" required />-->
+<!--    </div>-->
+<!--    <button type="submit" class="btn btn-primary" style="width: 100%;">Accedi</button>-->
+<!--  </form>-->
+
+<!--  <div class="footer-link">-->
+<!--    Non hai un account? <a th:href="@{/utente/registrazione}">Registrati qui</a>-->
+<!--  </div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -5,26 +38,39 @@
   <title>Login - Zootropolis</title>
   <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
-<body>
-<div class="card">
-  <h2>Accedi a Zootropolis</h2>
+<body style="display: block;">
+<div class="card" style="max-width: 400px; margin: 4rem auto; padding: 2rem; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
 
-  <div th:if="${errore}" class="alert alert-danger" th:text="${errore}"></div>
-  <div th:if="${messaggio}" class="alert alert-success" th:text="${messaggio}"></div>
+  <h2 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">🔑 Accesso Zootropolis</h2>
 
+  <div th:if="${messaggio}" class="alert alert-success" style="background-color: #d1e7dd; color: #0f5132; padding: 0.8rem; border-radius: 6px; margin-bottom: 1rem;" th:text="${messaggio}"></div>
+
+  <!-- SEQUENZA 4.a.1: informa("Credenziali fornite non corrette") -->
+  <div th:if="${errore}" class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 0.8rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+    <strong>⚠️ 4.a.1:</strong> <span th:text="${errore}">Credenziali fornite non corrette</span>
+    <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">4.a.2 Reinserisci le credenziali o clicca su Annulla.</p>
+  </div>
+
+  <!-- 2. richiediCredenziali() / 3. inserisciCredenziali(email, password) -->
   <form th:action="@{/login}" method="post">
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" name="email" placeholder="nome@esempio.com" required />
+    <div class="form-group" style="margin-bottom: 1rem;">
+      <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Email:</label>
+      <input type="email" name="email" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="utente@zootropolis.it" required />
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" name="password" placeholder="••••••••" required />
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label style="font-weight: bold; display: block; margin-bottom: 0.4rem;">Password:</label>
+      <input type="password" name="password" class="form-control" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="••••••••" required />
     </div>
-    <button type="submit" class="btn btn-primary" style="width: 100%;">Accedi</button>
+
+    <div style="display: flex; gap: 1rem;">
+      <button type="submit" class="btn btn-primary" style="flex: 1; font-weight: bold; padding: 0.6rem;">Accedi</button>
+      <!-- annullaOperazione() -->
+      <a th:href="@{/login/annulla}" class="btn btn-secondary" style="text-decoration: none; padding: 0.6rem 1rem; background-color: #6c757d; color: white; border-radius: 6px; text-align: center;">Annulla</a>
+    </div>
   </form>
 
-  <div class="footer-link">
+  <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem;">
     Non hai un account? <a th:href="@{/utente/registrazione}">Registrati qui</a>
   </div>
 </div>

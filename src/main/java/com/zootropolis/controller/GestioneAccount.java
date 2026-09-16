@@ -25,14 +25,15 @@ public class GestioneAccount {
     // ==========================================
     // UC-01 REGISTRARSI
     // ==========================================
-
+// Message: elaboraRegistrazione(datiPersonali, credenziali)
     @Transactional
     public boolean elaboraRegistrazione(RegistrazioneDTO dto) {
         log.info("Elaborazione registrazione per email: {}", dto != null ? dto.getEmail() : "null");
 
-        // Self-Message: validaDati(dto)
+        // Self-Message: validaDati(datiPersonali, credenziali)
         validaDati(dto);
 
+        // Message: create(datiPersonali, credenziali) su :Account -> Return: nuovoAccount
         Utente nuovoAccount = new Utente();
         nuovoAccount.setNome(dto.getNome());
         nuovoAccount.setCognome(dto.getCognome());
@@ -42,23 +43,61 @@ public class GestioneAccount {
         nuovoAccount.setStatoAccount(true);
 
         accountRepository.save(nuovoAccount);
-        log.info("Nuovo utente registrato con successo: {}", dto.getEmail());
+        log.info("Nuovo utente salvato con successo: {}", dto.getEmail());
+
+        // Return: registrazioneCompletata
         return true;
     }
 
-    // Self-Message: validaDati(dto)
+    // Self-Message: validaDati(datiPersonali, credenziali)
     private void validaDati(RegistrazioneDTO dto) {
         if (dto == null) {
-            throw new ErroreValidazioneException("Dati di registrazione assenti.");
+            // Sequenza 4.a: erroreValidazione
+            throw new ErroreValidazioneException("Dati non validi o identificativo già in uso");
         }
         if (dto.getEmail() == null || dto.getEmail().isBlank() ||
-                dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new ErroreValidazioneException("Tutti i campi obbligatori devono essere compilati.");
+                dto.getPassword() == null || dto.getPassword().isBlank() ||
+                dto.getNome() == null || dto.getNome().isBlank() ||
+                dto.getCognome() == null || dto.getCognome().isBlank()) {
+            throw new ErroreValidazioneException("Dati non validi o identificativo già in uso");
         }
         if (accountRepository.existsByEmail(dto.getEmail())) {
-            throw new ErroreValidazioneException("Dati non validi o identificativo già in uso.");
+            throw new ErroreValidazioneException("Dati non validi o identificativo già in uso");
         }
     }
+//    @Transactional
+//    public boolean elaboraRegistrazione(RegistrazioneDTO dto) {
+//        log.info("Elaborazione registrazione per email: {}", dto != null ? dto.getEmail() : "null");
+//
+//        // Self-Message: validaDati(dto)
+//        validaDati(dto);
+//
+//        Utente nuovoAccount = new Utente();
+//        nuovoAccount.setNome(dto.getNome());
+//        nuovoAccount.setCognome(dto.getCognome());
+//        nuovoAccount.setEmail(dto.getEmail());
+//        nuovoAccount.setPassword(dto.getPassword());
+//        nuovoAccount.setDataNascita(dto.getDataNascita());
+//        nuovoAccount.setStatoAccount(true);
+//
+//        accountRepository.save(nuovoAccount);
+//        log.info("Nuovo utente registrato con successo: {}", dto.getEmail());
+//        return true;
+//    }
+//
+//    // Self-Message: validaDati(dto)
+//    private void validaDati(RegistrazioneDTO dto) {
+//        if (dto == null) {
+//            throw new ErroreValidazioneException("Dati di registrazione assenti.");
+//        }
+//        if (dto.getEmail() == null || dto.getEmail().isBlank() ||
+//                dto.getPassword() == null || dto.getPassword().isBlank()) {
+//            throw new ErroreValidazioneException("Tutti i campi obbligatori devono essere compilati.");
+//        }
+//        if (accountRepository.existsByEmail(dto.getEmail())) {
+//            throw new ErroreValidazioneException("Dati non validi o identificativo già in uso.");
+//        }
+//    }
 
     // ==========================================
     // UC-02 LOGIN
@@ -79,13 +118,13 @@ public class GestioneAccount {
 
         Account account = accountOpt.get();
 
-        // Verifico prima se l'account è disabilitato/sospeso (UC-14)
+        // Controllo stato sospensione (UC-14)
         if (Boolean.FALSE.equals(account.getStatoAccount())) {
             log.warn("Login fallito: account {} risulta sospeso", email);
-            throw new ErroreValidazioneException("Account sospeso o disattivato. Contattare l'assistenza.");
+            throw new ErroreValidazioneException("Credenziali fornite non corrette");
         }
 
-        // Message: getDatiAccesso() -> Return: credenzialiRegistrate
+        // Message: getDatiAccesso() su :Account -> Return: credenzialiRegistrate
         String credenzialiRegistrate = account.getDatiAccesso();
 
         // Self-Message: validaCredenziali(email, password, credenzialiRegistrate)
@@ -95,7 +134,7 @@ public class GestioneAccount {
             throw new ErroreValidazioneException("Credenziali fornite non corrette");
         }
 
-        // Message: setStatoAutenticazione(true) -> Return: statoAggiornato
+        // Message: setStatoAutenticazione(true) su :Account -> Return: statoAggiornato
         account.setStatoAutenticazione(true);
         accountRepository.save(account);
 
@@ -104,7 +143,7 @@ public class GestioneAccount {
         return account;
     }
 
-    // Self-Message: validaCredenziali(...)
+    // Self-Message: validaCredenziali(email, password, credenzialiRegistrate)
     private boolean validaCredenziali(String email, String passwordInserita, String credenzialiRegistrate) {
         return passwordInserita != null && passwordInserita.equals(credenzialiRegistrate);
     }
