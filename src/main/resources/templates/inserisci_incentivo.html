@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .form-container {
-            max-width: 650px;
+            max-width: 750px;
             margin: 2.5rem auto;
             background: white;
             padding: 2.5rem;
@@ -38,6 +38,21 @@
             text-decoration: none;
             font-weight: bold;
         }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .data-table th, .data-table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
     </style>
 </head>
 <body style="display: block;">
@@ -47,22 +62,21 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="margin: 0; color: #2c3e50;">🎁 Nuovo Incentivo Promozionale</h2>
-        <!-- annullaOperazione() -->
         <a th:href="@{/amministrazione/incentivi/annulla}" class="btn-danger-sm">✖ Annulla</a>
     </div>
 
-    <!-- 6. confermaSalvataggioIncentivo() -->
+    <!-- Messaggio di conferma -->
     <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}">
         Incentivo salvato con successo
     </div>
 
-    <!-- SEQUENZA 4.a: ERRORE VALIDAZIONE -->
+    <!-- Gestione Errore Validazione -->
     <div th:if="${erroreValidazione}" class="alert-error">
-        <strong>⚠️ 4.a.2:</strong> <span th:text="${erroreValidazione}">Parametri non validi o incongruenti</span>
-        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">4.a.3 Modifica i parametri inseriti o annulla l'operazione.</p>
+        <strong>⚠️ Errore:</strong> <span th:text="${erroreValidazione}">Parametri non validi o incongruenti</span>
+        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">Modifica i parametri inseriti o annulla l'operazione.</p>
     </div>
 
-    <!-- 2. richiediParametriIncentivo() / 3. fornisciParametri(datiIncentivo) -->
+    <!-- Form Inserimento -->
     <form th:action="@{/amministrazione/incentivi}" method="post">
 
         <div style="margin-bottom: 1rem;">
@@ -89,6 +103,31 @@
             Crea ed Attiva Incentivo
         </button>
     </form>
+
+    <!-- Tabella elenco incentivi salvati -->
+    <div style="margin-top: 2.5rem;" th:if="${listaIncentivi != null and !listaIncentivi.isEmpty()}">
+        <h3 style="color: #2c3e50; border-bottom: 2px solid #6f42c1; padding-bottom: 0.5rem; margin-bottom: 1rem;">Incentivi Promozionali Attivi</h3>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrizione</th>
+                <th>Sconto</th>
+                <th>Inizio</th>
+                <th>Fine</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="inc : ${listaIncentivi}">
+                <td th:text="${inc.id}">1</td>
+                <td style="font-weight: bold;" th:text="${inc.descrizione}">Promozione Primavera</td>
+                <td style="color: #198754; font-weight: bold;" th:text="${inc.sconto + '%'}">20%</td>
+                <td th:text="${#temporals.format(inc.dataInizio, 'dd/MM/yyyy HH:mm')}">01/09/2026 00:00</td>
+                <td th:text="${#temporals.format(inc.dataFine, 'dd/MM/yyyy HH:mm')}">30/09/2026 23:59</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 </body>

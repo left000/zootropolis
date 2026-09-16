@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <style>
         .form-container {
-            max-width: 650px;
+            max-width: 750px;
             margin: 2.5rem auto;
             background: white;
             padding: 2.5rem;
@@ -38,6 +38,29 @@
             text-decoration: none;
             font-weight: bold;
         }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .data-table th, .data-table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .badge-vietata {
+            background: #dc3545;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body style="display: block;">
@@ -47,22 +70,21 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="margin: 0; color: #2c3e50;">🚧 Lavori Urbani (Cantieri)</h2>
-        <!-- annullaOperazione() -->
         <a th:href="@{/amministrazione/lavori-urbani/annulla}" class="btn-danger-sm">✖ Annulla</a>
     </div>
 
-    <!-- 6. confermaAvvenutoAggiornamento() -->
+    <!-- Messaggio di conferma -->
     <div th:if="${messaggio}" class="alert-success" th:text="${messaggio}">
         Aggiornamento completato con successo
     </div>
 
-    <!-- SEQUENZA 4.a: ERRORE VALIDAZIONE -->
+    <!-- Gestione Errore Validazione -->
     <div th:if="${erroreValidazione}" class="alert-error">
-        <strong>⚠️ 4.a.2:</strong> <span th:text="${erroreValidazione}">Dati non validi</span>
-        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">4.a.3 Modifica i campi o clicca su Annulla in alto a destra.</p>
+        <strong>⚠️ Errore:</strong> <span th:text="${erroreValidazione}">Dati non validi</span>
+        <p style="font-size: 0.85rem; margin-top: 0.4rem; margin-bottom: 0;">Modifica i campi o clicca su Annulla per tornare alla Dashboard.</p>
     </div>
 
-    <!-- 2. richiediDatiGeograficiETemporali() / 3. fornisciDatiLavori(coordinate, date) -->
+    <!-- Form Inserimento -->
     <form th:action="@{/amministrazione/lavori-urbani}" method="post">
 
         <div style="margin-bottom: 1rem;">
@@ -84,6 +106,29 @@
             Registra Cantiere ed Imposta Area VIETATA
         </button>
     </form>
+
+    <!-- Tabella elenco cantieri registrati -->
+    <div style="margin-top: 2.5rem;" th:if="${areeRegistrate != null and !areeRegistrate.isEmpty()}">
+        <h3 style="color: #2c3e50; border-bottom: 2px solid #ffc107; padding-bottom: 0.5rem; margin-bottom: 1rem;">Cantieri e Lavori Registrati</h3>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome Area</th>
+                <th>Stato</th>
+                <th>Dettagli / Coordinate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="area : ${areeRegistrate}">
+                <td th:text="${area.id}">1</td>
+                <td style="font-weight: bold;" th:text="${area.nome}">Cantiere Via Sparano</td>
+                <td><span class="badge-vietata" th:text="${area.stato}">VIETATA</span></td>
+                <td th:text="${area.descrizione}">Coordinate: ...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 </body>
