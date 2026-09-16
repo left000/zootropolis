@@ -11,6 +11,6 @@ public class AreaSquilibrataDTO {
     private String nomeArea;
     private int mezzePresenti;
     private int capacitaMassima;
-    private String tipoSquilibrio; // "ECCEDENZA" o "CARENZA"
-    private int deltaMezzi; // Quantità di mezzi da rimuovere o aggiungere
+    private String tipoSquilibrio;
+    private int deltaMezzi;
 }

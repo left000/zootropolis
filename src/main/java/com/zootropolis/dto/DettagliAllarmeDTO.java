@@ -12,5 +12,5 @@ public class DettagliAllarmeDTO {
     private String tipoMezzo;
     private String posizioneAttuale;
     private Integer percentualeBatteria;
-    private String tipoAllarme; // Es. "SPOSTAMENTO NON AUTORIZZATO"
+    private String tipoAllarme;
 }

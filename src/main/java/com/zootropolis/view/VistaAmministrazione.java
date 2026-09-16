@@ -163,54 +163,7 @@ public class VistaAmministrazione {
         return "redirect:/amministrazione/dashboard";
     }
 
-//    // 1. richiedeInserimentoLavoriUrbani() -> 2. richiediDatiGeograficiETemporali()
-//    @GetMapping("/lavori-urbani")
-//    public String mostraFormLavoriUrbani(HttpSession session, RedirectAttributes redirectAttributes) {
-//        if (!isAmministrazione(session)) {
-//            redirectAttributes.addFlashAttribute("errore", "Accesso negato.");
-//            return "redirect:/login";
-//        }
-//        return "inserisci_lavori_urbani";
-//    }
-//
-//    // 3. fornisciDatiLavori(coordinate, date)
-//    @PostMapping("/lavori-urbani")
-//    public String inserisciLavoriUrbani(
-//            @RequestParam("coordinate") String coordinate,
-//            @RequestParam("date") String date,
-//            @RequestParam(value = "nomeArea", required = false) String nomeArea,
-//            HttpSession session,
-//            RedirectAttributes redirectAttributes,
-//            Model model) {
-//
-//        if (!isAmministrazione(session)) {
-//            redirectAttributes.addFlashAttribute("errore", "Accesso negato.");
-//            return "redirect:/login";
-//        }
-//
-//        try {
-//            // inserisciLavoriUrbani(coordinate, date) -> 6. confermaAvvenutoAggiornamento()
-//            AreaDTO areaInserita = gestioneAmministrazione.inserisciLavoriUrbani(coordinate, date, nomeArea);
-//            redirectAttributes.addFlashAttribute("messaggio", "Aggiornamento completato: Area '" + areaInserita.getNome() + "' impostata su " + areaInserita.getStato() + ".");
-//            return "redirect:/amministrazione/lavori-urbani";
-//
-//        } catch (IllegalArgumentException e) {
-//            // Sequenza 4.a: 4.a.2 informaErrore("Dati non validi") -> 4.a.3 richiediModificaOAnnulla()
-//            model.addAttribute("erroreValidazione", e.getMessage());
-//            model.addAttribute("coordinateInserite", coordinate);
-//            model.addAttribute("dateInserite", date);
-//            model.addAttribute("nomeAreaInserito", nomeArea);
-//            return "inserisci_lavori_urbani";
-//        }
-//    }
-//
-//    // Sceglie di annullare: annullaOperazione() -> operazioneAnnullata()
-//    @GetMapping("/lavori-urbani/annulla")
-//    public String annullaInserimentoLavori(RedirectAttributes redirectAttributes) {
-//        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
-//        return "redirect:/amministrazione/dashboard";
-//    }
-// ==========================================
+    // ==========================================
     // UC-19 INSERIRE INCENTIVI
     // ==========================================
 

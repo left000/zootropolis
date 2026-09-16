@@ -143,62 +143,10 @@ public class VistaUtente {
         return "redirect:/utente/mezzi/cerca";
     }
 
-//    // ==========================================
-//    // UC-03 CERCARE MEZZI (Mappa & Controlli Raggio)
-//    // ==========================================
-//
-//    @GetMapping("/utente/mezzi/cerca")
-//    public String cercaMezzi(Model model, HttpSession session) {
-//        Object account = session.getAttribute("accountLoggato");
-//        if (account == null) return "redirect:/login";
-//
-//        List<MezzoDTO> listaMezzi = gestioneMezzi.acquisisciPosizioneERicercaDTO();
-//        model.addAttribute("listaDatiMezzi", listaMezzi);
-//        model.addAttribute("raggio", gestioneMezzi.getRaggioRicerca());
-//        model.addAttribute("posizioneRilevata", gestioneMezzi.getPosizioneAttualeUtente());
-//        return "cerca_mezzi";
-//    }
-//
-//    // Espandi raggio
-//    @GetMapping("/utente/mezzi/espandi-raggio")
-//    public String espandiRaggio() {
-//        gestioneMezzi.incrementaRaggioRicerca();
-//        return "redirect:/utente/mezzi/cerca";
-//    }
-//
-//    // Diminuisci raggio
-//    @GetMapping("/utente/mezzi/diminuisci-raggio")
-//    public String diminuisciRaggio() {
-//        gestioneMezzi.decrementaRaggioRicerca();
-//        return "redirect:/utente/mezzi/cerca";
-//    }
-//
-//    // Reset raggio
-//    @GetMapping("/utente/mezzi/reset-raggio")
-//    public String resetRaggio() {
-//        gestioneMezzi.resetRaggioRicerca();
-//        return "redirect:/utente/mezzi/cerca";
-//    }
-//
-//    // Annulla ricerca e ritorna in Dashboard
-//    @GetMapping("/utente/mezzi/annulla")
-//    public String annullaRicercaMezzi(RedirectAttributes redirectAttributes) {
-//        gestioneMezzi.resetRicerca();
-//        redirectAttributes.addFlashAttribute("messaggio", "Ricerca annullata con successo.");
-//        return "redirect:/utente/dashboard";
-//    }
-//
-//    // Gestisce l'inserimento manuale della posizione (Flusso 2.a)
-//    @PostMapping("/utente/mezzi/indirizzo")
-//    public String aggiornaPosizioneManuale(@RequestParam("indirizzo") String indirizzo) {
-//        gestioneMezzi.aggiornaPosizione(indirizzo);
-//        return "redirect:/utente/mezzi/cerca";
-//    }
-
     // ==========================================
     // UC-04 VISUALIZZARE DETTAGLI MEZZO
     // ==========================================
-// 1. selezionaVeicolo(idMezzo)
+    // 1. selezionaVeicolo(idMezzo)
     @GetMapping("/utente/mezzi/{id}")
     public String selezionaVeicolo(@PathVariable("id") Long idMezzo, HttpSession session, Model model) {
         Object account = session.getAttribute("accountLoggato");
@@ -428,51 +376,6 @@ public class VistaUtente {
         return "redirect:/utente/dashboard";
     }
 
-//    @GetMapping("/utente/percorso/avvia")
-//    public String avviaCalcoloPercorso(@RequestParam(value = "idMezzo", required = false) Long idMezzo, Model model, HttpSession session) {
-//        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
-//        model.addAttribute("idMezzo", idMezzo);
-//        return "calcola_percorso";
-//    }
-//
-//    @PostMapping("/utente/percorso/calcola")
-//    public String calcolaPercorso(
-//            @RequestParam(value = "idMezzo", required = false) Long idMezzo,
-//            @RequestParam("destinazione") String destinazione,
-//            @RequestParam(value = "partenzaManuale", required = false) String partenzaManuale,
-//            Model model,
-//            HttpSession session) {
-//
-//        if (session.getAttribute("accountLoggato") == null) return "redirect:/login";
-//
-//        model.addAttribute("idMezzo", idMezzo);
-//        model.addAttribute("destinazioneInserita", destinazione);
-//
-//        try {
-//            PercorsoDTO percorso = gestioneCorse.elaboraRichiestaPercorso(idMezzo, destinazione, partenzaManuale);
-//            model.addAttribute("percorso", percorso);
-//            return "calcola_percorso";
-//
-//        } catch (IllegalArgumentException e) {
-//            model.addAttribute("erroreDestinazione", e.getMessage());
-//            return "calcola_percorso";
-//
-//        } catch (IllegalStateException e) {
-//            model.addAttribute("errorePosizioneAssente", e.getMessage());
-//            model.addAttribute("richiediPartenzaManuale", true);
-//            return "calcola_percorso";
-//
-//        } catch (RuntimeException e) {
-//            model.addAttribute("errorePercorsoImpossibile", e.getMessage());
-//            return "calcola_percorso";
-//        }
-//    }
-//
-//    @GetMapping("/utente/percorso/annulla")
-//    public String annullaCalcoloPercorso(RedirectAttributes redirectAttributes) {
-//        redirectAttributes.addFlashAttribute("messaggio", "Operazione annullata.");
-//        return "redirect:/utente/dashboard";
-//    }
 
     @GetMapping("/utente/corse/dettaglio/{id}")
     public String dettaglioCorsaInCorso(@PathVariable("id") Long idCorsa, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
